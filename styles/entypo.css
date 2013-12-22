@@ -1,0 +1,41 @@
+@font-face {
+	font-family: 'Entypo';
+	src: url('entypo.eot');
+}
+
+@font-face {
+	font-family: 'Entypo';
+	src: url('entypo.woff') format('woff'),
+	     url('entypo.ttf') format('truetype'),
+	     url('entypo.svg') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.entypo {
+	display: inline-block;
+	width: 40px;
+	height: 40px;
+	-webkit-font-smoothing: antialiased;
+	font-size: 50px;
+	line-height: 1;
+	font-family: 'Entypo';
+	text-decoration: inherit;
+	font-weight: normal;
+	font-style: normal;
+	vertical-align: top;
+}
+
+.entypo-chevron-left:before { content: "\E75D"; }
+.entypo-chevron-down:before { content: "\E75C"; }
+.entypo-chevron-up:before { content: "\E75F"; }
+.entypo-chevron-right:before { content: "\E75E"; }
+.entypo-chevron-small-left:before { content: "\E761"; }
+.entypo-chevron-small-down:before { content: "\E760"; }
+.entypo-chevron-small-up:before { content: "\E763"; }
+.entypo-chevron-small-right:before { content: "\E762"; }
+.entypo-chevron-thin-left:before { content: "\E765"; }
+.entypo-chevron-thin-down:before { content: "\E764"; }
+.entypo-chevron-thin-up:before { content: "\E767"; }
+.entypo-chevron-thin-right:before { content: "\E766"; }
+

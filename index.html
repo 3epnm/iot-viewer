@@ -1,0 +1,358 @@
+<html>
+<head>
+	<meta charset='utf-8'>
+	<meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+	<title>Test</title>
+	<link rel="stylesheet" href="jquery-ui.css"></link>
+	<link rel="stylesheet" href="styles/genericons.css"></link>	
+	<link rel="stylesheet" href="styles/entypo.css"></link>	
+	<link rel="stylesheet" href="styles.css"></link>
+	<script src="jquery-1.9.1.js"></script>
+	<script src="jquery-ui.js"></script>
+	<script src="jquery.i18Now/jquery.i18Now.1.4.0.js"></script>
+	<script src="hammer.js/hammer.js"></script>
+	<script src="hammer.js/plugins/hammer.fakemultitouch.js"></script>
+	<script src="hammer.js/plugins/hammer.showtouches.js"></script>
+	<script src="jquery.hammer.js/jquery.hammer.js"></script>
+	<script>
+		var dateformats = {
+			"eng" : {
+		        "D" : ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+		        "l" : ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+		        "M" : ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+		        "F" : ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+		        "format" : "%l, %d %F %Y %H:%i:%s"
+		    },
+		    "deu" : {
+		        "D" : ["So.", "Mo.", "Di.", "Mi.", "Do.", "Fr.", "Sa."],
+		        "l" : ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
+		        "M" : ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+		        "F" : ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", 
+		               "August", "September", "Oktober", "November", "Dezember"],
+		        "format" : "%l, %d. %F %Y %H:%i:%s"
+		    }
+		};
+	</script>
+</head>
+<body>
+
+<div class="icons">
+	<div class="genericon genericon-standard"></div>
+	<div class="genericon genericon-aside"></div>
+	<div class="genericon genericon-image"></div>
+	<div class="genericon genericon-gallery"></div>
+	<div class="genericon genericon-video"></div>
+	<div class="genericon genericon-status"></div>
+	<div class="genericon genericon-quote"></div>
+	<div class="genericon genericon-link"></div>
+	<div class="genericon genericon-chat"></div>
+	<div class="genericon genericon-audio"></div>
+	<div class="genericon genericon-github"></div>
+	<div class="genericon genericon-dribbble"></div>
+	<div class="genericon genericon-twitter"></div>
+	<div class="genericon genericon-facebook"></div>
+	<div class="genericon genericon-facebook-alt"></div>
+	<div class="genericon genericon-wordpress"></div>
+	<div class="genericon genericon-googleplus"></div>
+	<div class="genericon genericon-linkedin"></div>
+	<div class="genericon genericon-linkedin-alt"></div>
+	<div class="genericon genericon-pinterest"></div>
+	<div class="genericon genericon-pinterest-alt"></div>
+	<div class="genericon genericon-flickr"></div>
+	<div class="genericon genericon-vimeo"></div>
+	<div class="genericon genericon-youtube"></div>
+	<div class="genericon genericon-tumblr"></div>
+	<div class="genericon genericon-instagram"></div>
+	<div class="genericon genericon-codepen"></div>
+	<div class="genericon genericon-comment"></div>
+	<div class="genericon genericon-category"></div>
+	<div class="genericon genericon-tag"></div>
+	<div class="genericon genericon-time"></div>
+	<div class="genericon genericon-user"></div>
+	<div class="genericon genericon-day"></div>
+	<div class="genericon genericon-week"></div>
+	<div class="genericon genericon-month"></div>
+	<div class="genericon genericon-pinned"></div>
+	<div class="genericon genericon-search"></div>
+	<div class="genericon genericon-unzoom"></div>
+	<div class="genericon genericon-zoom"></div>
+	<div class="genericon genericon-show"></div>
+	<div class="genericon genericon-hide"></div>
+	<div class="genericon genericon-close"></div>
+	<div class="genericon genericon-close-alt"></div>
+	<div class="genericon genericon-trash"></div>
+	<div class="genericon genericon-star"></div>
+	<div class="genericon genericon-home"></div>
+	<div class="genericon genericon-mail"></div>
+	<div class="genericon genericon-edit"></div>
+	<div class="genericon genericon-reply"></div>
+	<div class="genericon genericon-feed"></div>
+	<div class="genericon genericon-warning"></div>
+	<div class="genericon genericon-share"></div>
+	<div class="genericon genericon-attachment"></div>
+	<div class="genericon genericon-location"></div>
+	<div class="genericon genericon-checkmark"></div>
+	<div class="genericon genericon-menu"></div>
+	<div class="genericon genericon-top"></div>
+	<div class="genericon genericon-minimize"></div>
+	<div class="genericon genericon-maximize"></div>
+	<div class="genericon genericon-404"></div>
+	<div class="genericon genericon-spam"></div>
+	<div class="genericon genericon-summary"></div>
+	<div class="genericon genericon-cloud"></div>
+	<div class="genericon genericon-key"></div>
+	<div class="genericon genericon-dot"></div>
+	<div class="genericon genericon-next"></div>
+	<div class="genericon genericon-previous"></div>
+	<div class="genericon genericon-expand"></div>
+	<div class="genericon genericon-collapse"></div>
+	<div class="genericon genericon-dropdown"></div>
+	<div class="genericon genericon-dropdown-left"></div>
+	<div class="genericon genericon-top"></div>
+	<div class="genericon genericon-draggable"></div>
+	<div class="genericon genericon-phone"></div>
+	<div class="genericon genericon-send-to-phone"></div>
+	<div class="genericon genericon-plugin"></div>
+	<div class="genericon genericon-cloud-download"></div>
+	<div class="genericon genericon-cloud-upload"></div>
+	<div class="genericon genericon-external"></div>
+	<div class="genericon genericon-document"></div>
+	<div class="genericon genericon-book"></div>
+	<div class="genericon genericon-cog"></div>
+	<div class="genericon genericon-unapprove"></div>
+	<div class="genericon genericon-cart"></div>
+	<div class="genericon genericon-pause"></div>
+	<div class="genericon genericon-stop"></div>
+	<div class="genericon genericon-skip-back"></div>
+	<div class="genericon genericon-skip-ahead"></div>
+	<div class="genericon genericon-play"></div>
+	<div class="genericon genericon-tablet"></div>
+	<div class="genericon genericon-send-to-tablet"></div>
+</div>
+
+<div class="icons">
+	<div class="entypo entypo-chevron-left"></div>
+	<div class="entypo entypo-chevron-down"></div>
+	<div class="entypo entypo-chevron-up"></div>
+	<div class="entypo entypo-chevron-right"></div>
+	<div class="entypo entypo-chevron-small-left"></div>
+	<div class="entypo entypo-chevron-small-down"></div>
+	<div class="entypo entypo-chevron-small-up"></div>
+	<div class="entypo entypo-chevron-small-right"></div>
+	<div class="entypo entypo-chevron-thin-left"></div>
+	<div class="entypo entypo-chevron-thin-down"></div>
+	<div class="entypo entypo-chevron-thin-up"></div>
+	<div class="entypo entypo-chevron-thin-right"></div>
+</div>
+
+<div class="bottom">
+	<div id="date" class="date">
+		<div class="handle entypo entypo-chevron-thin-up"></div>
+		<div class="from picker">
+			<ul id="from-month" class="month roll"></ul>
+			<ul id="from-date" class="date roll"></ul>
+			<ul id="from-year" class="year roll"></ul>
+			<ul id="from-hours" class="hours roll"></ul>
+			<ul id="from-minutes" class="minutes roll"></ul>
+			<div id="from-month-shadow" class="shadow month-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="from-date-shadow" class="shadow date-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="from-year-shadow" class="shadow year-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="from-hours-shadow" class="shadow hours-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="from-minutes-shadow" class="shadow minutes-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+		</div>
+		<div class="spacer"></div>
+		<div class="to picker">
+			<ul id="to-month" class="month roll"></ul>
+			<ul id="to-date" class="date roll"></ul>
+			<ul id="to-year" class="year roll"></ul>
+			<ul id="to-hours" class="hours roll"></ul>
+			<ul id="to-minutes" class="minutes roll"></ul>
+			<div id="to-month-shadow" class="shadow month-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="to-date-shadow" class="shadow date-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="to-year-shadow" class="shadow year-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="to-hours-shadow" class="shadow hours-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+			<div id="to-minutes-shadow" class="shadow minutes-shadow">
+				<div class="up genericon genericon-collapse"></div>
+				<div class="down genericon genericon-expand"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+if (!Array.prototype.indexOf) {
+  Array.prototype.indexOf = function (obj, fromIndex) {
+    if (fromIndex == null) {
+        fromIndex = 0;
+    } else if (fromIndex < 0) {
+        fromIndex = Math.max(0, this.length + fromIndex);
+    }
+    for (var i = fromIndex, j = this.length; i < j; i++) {
+        if (this[i] === obj)
+            return i;
+    }
+    return -1;
+  };
+}
+
+String.prototype.capitalize = function () {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+var picker = { 
+	config: { 
+		item : 30,
+		month : dateformats["eng"]["F"],
+		date : [],
+		year : [2013, 2014],
+		hours : [],
+		minutes : []
+	},
+	set: {
+		from : new Date(),
+		to : new Date()
+	},
+	setPicker: function (ft, date) {
+		var set = {
+			month : date.getMonth(), 
+			date : date.getDate(), 
+			year : date.getFullYear(), 
+			hours : date.getHours(), 
+			minutes : date.getMinutes()
+		}
+		for (var i in picker[ft]) {
+			var top = 0;
+			if (i == "month")
+				top = set[i] * picker.config.item;
+			else if (i == "date")
+				top = (set[i]-1) * picker.config.item;
+			else
+				top = picker.config[i].indexOf(set[i]) * picker.config.item;
+			$("#" + ft + "-" + i).css("top", "-" + top + "px");
+		}
+	}
+}
+picker.from = { 
+	month:  { delta : 0, selected : 0 },
+	date:    { delta : 0, selected : 1 },
+	year:   { delta : 0, selected : picker.config.year[0] },
+	hours:   { delta : 0, selected : 0 },
+	minutes: { delta : 0, selected : 0 }
+};
+
+picker.to = { 
+	month:  { delta : 0, selected : 0 },
+	date:    { delta : 0, selected : 1 },
+	year:   { delta : 0, selected : picker.config.year[0] },
+	hours:   { delta : 0, selected : 0 },
+	minutes: { delta : 0, selected : 0 }
+};
+
+for (var i in picker.config.month) {
+	$("#date .from .month, #date .to .month").append('<li>' + picker.config.month[i] + '</li>');
+}
+for (var i=1; i<32; i++) {
+	picker.config.date.push(i);
+	$("#date .from .date, #date .to .date").append('<li>' + i + '</li>');			
+}
+for (var i in picker.config.year) {
+	$("#date .from .year, #date .to .year").append('<li>' + picker.config.year[i] + '</li>');
+}
+for (var i=0; i<24; i++) {
+	picker.config.hours.push(i);
+	if (i < 10) i = "0" + i;
+	$("#date .from .hours, #date .to .hours").append('<li>' + i + '</li>');			
+}
+for (var i=0; i<60; i++) {
+	picker.config.minutes.push(i);
+	if (i < 10) i = "0" + i;
+	$("#date .from .minutes, #date .to .minutes").append('<li>' + i + '</li>');
+}
+
+Hammer.plugins.fakeMultitouch();
+
+var ft = ["from", "to"];
+for (var i in ft) {
+	i = ft[i];
+	for (var h in picker[i]) {
+		picker[i][h].hammer = Hammer(document.getElementById(i + "-" + h + "-shadow"), {
+			prevent_default: true,
+			no_mouseevents: true
+		});
+
+		picker[i][h].hammer.on("dragstart", (function (e) {
+			this.delta = 0;
+		}).bind(picker[i][h]));
+
+		picker[i][h].hammer.on("drag", (function (e) {
+			var target = "#" + e.delegateTarget.id.substr(0, e.delegateTarget.id.lastIndexOf("-"));
+			var dy = Math.round(e.gesture.deltaY) - this.delta;
+			this.delta = Math.round(e.gesture.deltaY);
+			var offset = $(target).position().top + dy;
+			var height = $(target).height() - picker.config.item;
+			if (offset >= -height && offset <= 0)
+				$(target).css("top", offset + "px");
+		}).bind(picker[i][h]));
+
+		picker[i][h].hammer.on("dragend", (function (e) {
+			var target = e.delegateTarget.id.substr(0, e.delegateTarget.id.lastIndexOf("-"));
+			var pos = Math.abs($("#"+target).position().top);
+			var selected = null;
+			for (var i=0; i<document.getElementById(target).children.length; i++) {
+				var l = (i * picker.config.item);
+				var u = ((i + 1) * picker.config.item);
+				if (l < pos && pos < u) {
+					if (pos - l < u - pos) {
+						selected = i;
+						$("#"+target).css("top", "-" + l + "px");
+					}
+					else {
+						selected = i + 1;
+						$("#"+target).css("top", "-" + u + "px");
+					}
+					var ft = target.substr(0, target.indexOf("-"));
+					this.selected = { index : selected, name : picker.config[target.substr(target.indexOf("-")+1)][selected] };
+					
+					var cmd = "picker.set['" + ft + "'].set" + target.substr(target.indexOf("-")+1).capitalize() + "(" + selected + ")";
+					
+					eval(cmd);
+					console.log(cmd);
+				}
+			}
+		}).bind(picker[i][h]));
+	}
+}
+
+picker.setPicker("from", picker.set.from);
+picker.setPicker("to", picker.set.to);
+var foo = new String("foo");
+console.log(foo.capitalize());
+</script>
+</body>
+</html>
