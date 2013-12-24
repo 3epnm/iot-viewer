@@ -238,7 +238,8 @@ var picker = {
 		from : new Date(),
 		to : new Date()
 	},
-	setPicker: function (ft, date) {
+	setPicker: function (ft) {
+		var date = picker.set[ft]; 
 		var set = {
 			month : date.getMonth(), 
 			date : date.getDate(), 
@@ -246,6 +247,7 @@ var picker = {
 			hours : date.getHours(), 
 			minutes : date.getMinutes()
 		}
+		console.debug(set);
 		for (var i in picker[ft]) {
 			var top = 0;
 			if (i == "month")
@@ -337,22 +339,27 @@ for (var i in ft) {
 						$("#"+target).css("top", "-" + u + "px");
 					}
 					var ft = target.substr(0, target.indexOf("-"));
-					this.selected = { index : selected, name : picker.config[target.substr(target.indexOf("-")+1)][selected] };
-					
-					var cmd = "picker.set['" + ft + "'].set" + target.substr(target.indexOf("-")+1).capitalize() + "(" + selected + ")";
-					
+					var method = target.substr(target.indexOf("-")+1);
+					this.selected = { index : selected, name : picker.config[method][selected] };
+					if (method == "month") {
+						selected--;
+					} else if(method == "year") {
+						selected = picker.config.year[selected];
+
+					}
+					var cmd = "picker.set['" + ft + "'].set" + method.capitalize() + "(" + selected + ")";
 					eval(cmd);
-					console.log(cmd);
+					picker.setPicker(ft);
+					
+
 				}
 			}
 		}).bind(picker[i][h]));
 	}
 }
 
-picker.setPicker("from", picker.set.from);
-picker.setPicker("to", picker.set.to);
-var foo = new String("foo");
-console.log(foo.capitalize());
+picker.setPicker("from");
+picker.setPicker("to");
 </script>
 </body>
 </html>
