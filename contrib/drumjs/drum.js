@@ -157,14 +157,17 @@
 
 		$(HTMLselect).after(wrapper);
 
+		var inner = document.createElement("div");
+		$(inner).addClass("inner");
+		$(inner).appendTo(wrapper);
+
 		var container = document.createElement( "div" );
-		$(container).addClass("container");
+		$(container).addClass("container");		
+		$(container).appendTo(inner);
 
 		var drum = document.createElement( "div" );
 		$(drum).addClass("drum");
 		$(drum).appendTo(container);
-
-		$(container).appendTo(wrapper);
 
 		var dialUp = DrumIcon.up();
 		$(wrapper).append(dialUp);

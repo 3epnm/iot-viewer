@@ -1,9 +1,8 @@
 div.drum-wrapper {
 	position: relative;
 	float: left;
-	overflow: hidden;
-	height: 110px;
 	width: 100px;
+	height: 140px;
 	_border: 1px solid #CCC;
     -webkit-touch-callout:none;
     -webkit-user-select:none;
@@ -11,11 +10,19 @@ div.drum-wrapper {
     -ms-user-select:none;
     user-select:none;
 }
+
+div.drum-wrapper .inner {
+	overflow: hidden;
+	height: 110px;
+	position: relative;
+	top: 15px;	
+}
+
 div.drum-wrapper .dial {
 	position: absolute;
 	width: 100%;
 	left: 0px;
-	height: 44px;
+	height: 60px;
 	background-color: rgba(255, 255, 255, 0.7);
 	display: none;
 }
