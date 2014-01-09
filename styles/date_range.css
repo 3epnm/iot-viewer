@@ -41,6 +41,26 @@ div.date_range div.date_range_container {
 div.date_range div.date_range_container .handle {
 	height: 25px;
 	padding-top: 10px;
+	position: relative;
+	width: 475px;
+}
+
+div.date_range div.date_range_container .handle .heading {
+	position: absolute;
+	font-size: 90%;
+	font-family: 'Exo 2', sans-serif;
+	text-align: left;
+	left: 0px;
+	top: 6px;
+}
+
+div.date_range div.date_range_container .handle button {
+	position: absolute;
+	font-size: 70%;
+	font-family: 'Exo 2', sans-serif;
+	right: 0px;
+	top: 4px;
+	display: none;
 }
 
 div.date_range div.date_range_container .lines {
