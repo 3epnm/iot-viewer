@@ -11,8 +11,8 @@
 	<script src="contrib/hammerjs/hammer.min.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
 
-	<link rel="stylesheet" href="contrib/drumjs/drum.css"></link>
-	<script src="contrib/drumjs/drum.js"></script>
+	<link rel="stylesheet" href="contrib/drumjs/drum.min.css"></link>
+	<script src="contrib/drumjs/drum.min.js"></script>
 
 	<link rel="stylesheet" href="styles/date_range.css"></link>
 	<script src="lib/date_range.js"></script>
@@ -20,7 +20,7 @@
 <body>
 <div class="wrapper">
 	<div class="date_range date_range_close">
-		<div class="date_range_container">
+		<div class="date_range_container outside">
 			<div class="handle show_up">
 				<div class="heading">Date Time Range</div>
 				<svg width="40" height="10" class="up" xmlns="http://www.w3.org/2000/svg">
@@ -363,7 +363,7 @@ if (navigator.userAgent.match(/iPad;.*CPU.*OS 7_\d/i) && window.innerHeight != d
 }
 (function($, window, undefined) {
     // First check to see if the platform is an iPhone or iPod
-    if(/iP/.test(navigator.platform) &amp;&amp; /Safari/i.test(navigator.userAgent)){
+    if(/iP/.test(navigator.platform) && /Safari/i.test(navigator.userAgent)){
         var mobileSafari = "Safari";
     }
  
@@ -381,6 +381,7 @@ if (navigator.userAgent.match(/iPad;.*CPU.*OS 7_\d/i) && window.innerHeight != d
     });
  
 }(jQuery, this));
+
 </script>
 </body>
 </html>
