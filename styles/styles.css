@@ -15,6 +15,21 @@ body {
 	margin: 0;
 }
 
+input, button {
+	border: solid 1px #c0c0c0;
+	border-width: 1px !important;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	background: whiteSmoke;
+	color: #707070;
+	float: left;
+	display: inline-block;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;  	
+}
+
 .wrapper {
 	position: absolute;
 	width: 100%;

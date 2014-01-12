@@ -22,37 +22,38 @@
 	<link rel="stylesheet" href="styles/date_range.css"></link>
 	<script src="lib/date_range.js"></script>
 
-	<link rel="stylesheet" href="styles/panel_menu.css"></link>
-	<script src="lib/panel_menu.js"></script>
+	<link rel="stylesheet" href="contrib/panelmenu/panelmenu.css"></link>
+	<script src="contrib/panelmenu/panelmenu.js"></script>
 <script>
 
 Hammer.plugins.fakeMultitouch();
 
 $(document).ready(function () {
-	add_sensor_feed($("#panel #add"), "wrt00");
-	add_sensor_feed($("#panel #add"), "wrt01");
-	add_sensor_feed($("#panel #add"), "ThingSpeak");
-	add_sensor_feed($("#panel #add"), "Xively");
-	add_sensor_feed($("#panel #add"), "Open.Sen.Se");
-	add_sensor_feed($("#panel #add"), "Foo");
-	add_sensor_feed($("#panel #add"), "Bar");
-	add_sensor_feed($("#panel #add"), "Baz");
+	$("#panel").panelmenu();
+	$("#panel").panelmenu('add', 'wrt00');
+	$("#panel").panelmenu('add', 'wrt01');
+	$("#panel").panelmenu('add', 'ThingSpeak');
+	$("#panel").panelmenu('add', 'Xively');
+	$("#panel").panelmenu('add', 'Open.Sen.Se');
+	$("#panel").panelmenu('add', 'Foo');
+	$("#panel").panelmenu('add', 'Bar');
+	$("#panel").panelmenu('add', 'Baz');
 });
 </script>
 </head>
 <body>
 <div class="wrapper">
-	<div class="menu upper sensors_menu _upper_menu_close">
+	<div class="menu upper sensors_menu upper_menu_close">
 		<div class="sensors_menu_container menu_container">
 
-			<div id="panel">
+			<div id="panel" class="panelmenu">
 				<div class="ctrl">
 					<button class="icon move left"><i class="fa fa-chevron-left"></i></button>
 				</div>
-				<div id="feeds" class="sensor_feeds">
-					<div id="panelmenu" class="inner">
-						<div id="inner-list" class="list">
-							<button class="icon" id="add"><i class="fa fa-plus"></i></button>
+				<div class="outer">
+					<div class="items">
+						<div class="inner">
+							<button class="icon add" id="add"><i class="fa fa-plus"></i></button>
 						</div>
 					</div>
 				</div>
