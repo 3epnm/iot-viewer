@@ -22,9 +22,12 @@
 		obj.inner = ($(".inner", HTMLdiv))[0];
 		obj.add = ($(".add", HTMLdiv))[0];
 
-		console.dir(obj);
-
 		var settings = $.extend({
+			onNew : null,
+			onRemove : null,
+			onChange : null,
+			onSelect : null
+
 		}, options || {});
 
 		var width = function () {
@@ -80,10 +83,15 @@
 		var blur = function (elem) {
 			if ($(elem).val() == "") {
 				remove_item(elem);
+				if (typeof(settings.onRemove) == "function")
+					settings.onRemove(elem);
 			} else {
 				$(elem).addClass("center");
 				$(elem).attr("readonly", "readonly");
-				$(elem).data("focus", false);		
+				$(elem).data("focus", false);
+
+				if (typeof(settings.onChange) == "function")
+					settings.onChange(elem);	
 			}
 			update();
 		};
@@ -104,8 +112,8 @@
 				deactivate(this);
 
 				$(this).addClass("active");
-				
-				console.log($(this).attr("id") + " click");
+				if (typeof(settings.onSelect) == "function")
+					settings.onSelect(this);
 			});
 
 			$(item).dblclick(function () {
@@ -124,8 +132,6 @@
 					$(that).val(val); 
 					$(that).focus(); 
 				}, 100);
-
-				console.log($(this).attr("id") + " dblclick");
 			});
 
 			$(item).keydown(function(e) {
@@ -141,6 +147,10 @@
 			$(item).blur(function () { blur(this); });
 			
 			$(obj.inner).prepend($(item));
+
+			if (typeof(settings.onCreate) == "function")
+				settings.onCreate(item);
+			
 			update();
 
 			obj.menu_items.push(item);

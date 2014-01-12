@@ -29,7 +29,24 @@
 Hammer.plugins.fakeMultitouch();
 
 $(document).ready(function () {
-	$("#panel").panelmenu();
+	$("#panel").panelmenu({
+		onCreate : function (e) {
+			console.log("create");
+			console.dir(e); 
+		},
+		onRemove : function (e) {
+			console.log("remove");
+			console.dir(e);
+		},
+		onChange : function (e) {
+			console.log("change");
+			console.dir(e);
+		},
+		onSelect : function (e) {
+			console.log("select");
+			console.dir(e);
+		}
+	});
 	$("#panel").panelmenu('add', 'wrt00');
 	$("#panel").panelmenu('add', 'wrt01');
 	$("#panel").panelmenu('add', 'ThingSpeak');
