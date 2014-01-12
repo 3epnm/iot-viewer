@@ -1,0 +1,104 @@
+input, button {
+	border: solid 1px #c0c0c0;
+	border-width: 1px !important;
+	-webkit-border-radius: 2px;
+	-moz-border-radius: 2px;
+	border-radius: 2px;
+	background: whiteSmoke;
+	color: #707070;
+	float: left;
+	display: inline-block;
+	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
+	box-sizing: border-box;  	
+}
+
+#panel, #list {
+	float: left;
+	clear: both;
+	margin-bottom: 5px;
+	display: block;
+}
+
+.icon {
+	padding: 0px;
+	width: 25px;
+	height: 25px;
+	margin-top: -1px;
+} 
+
+.sensor_feeds {
+	float: left;
+	margin: 0px 5px;
+}
+
+.text {
+	padding: 0px 5px;
+	margin: -1px 5px 5px 0px;
+	float: left;
+	width: auto;
+	height: 25px;
+	font-size: 14px;
+	max-width: 200px;
+	text-overflow: ellipsis;
+}
+
+.active {
+	background-color: #FFFEED;
+}
+
+.center {
+	text-align: center;
+}
+
+#add {
+	margin-right: 0px;
+}
+#add div {
+	font-size: 150%;
+	font-weight: bold;
+	margin-top: -2px;
+}
+
+.icon i {
+	font-size: 16px;
+}
+
+#list {
+	margin-top: 5px;
+}
+
+.transparent {
+	color: transparent;
+}
+
+.sensor_feeds {
+	overflow: hidden;
+	padding-top: 1px;
+	width: 520px;
+	height: 25px;
+	position: relative;
+	float: left;
+}
+.ctrl {
+	float: left;
+	padding-top: 1px;
+}
+
+.ctrl i {
+	padding-top: 3px;
+}
+#panelmenu {
+	-webkit-backface-visibility: hidden;		
+	-webkit-transform: translateX(0px);
+}
+
+#panelmenu .list {
+	height: 28px;
+	-webkit-transform: translateX(0px);
+}
+
+.smooth {
+	transition-duration: 0.5s;
+	-webkit-transition-duration: 0.5s;			
+}

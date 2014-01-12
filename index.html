@@ -5,317 +5,39 @@
 	<title>Data Monitor</title>
 	<link href="http://fonts.googleapis.com/css?family=Exo+2:200,400,600" rel="stylesheet" type="text/css">
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-	<!--link href="styles/entypo.css" rel="stylesheet" type="text/css"-->
-
+	
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
 
 	<script src="contrib/hammerjs/hammer.min.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
-
+	
 	<link rel="stylesheet" href="styles/styles.css"></link>
 
 	<link rel="stylesheet" href="contrib/drumjs/drum.min.css"></link>
 	<script src="contrib/drumjs/drum.min.js"></script>
-
+	
 	<link rel="stylesheet" href="styles/sensors_menu.css"></link>
 	<script src="lib/sensors_menu.js"></script>
-
+	
 	<link rel="stylesheet" href="styles/date_range.css"></link>
 	<script src="lib/date_range.js"></script>
-	<style>
 
-	input, button {
-		border: solid 1px #c0c0c0;
-		border-width: 1px !important;
-		-webkit-border-radius: 2px;
-		-moz-border-radius: 2px;
-		border-radius: 2px;
-		background: whiteSmoke;
-		color: #707070;
-		float: left;
-		display: inline-block;
-		-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
-		-moz-box-sizing: border-box;    /* Firefox, other Gecko */
-		box-sizing: border-box;  	
-	}
-
-	#panel, #list {
-		float: left;
-		clear: both;
-		margin-bottom: 5px;
-		display: block;
-	}
-
-	.icon {
-		padding: 0px;
-		width: 25px;
-		height: 25px;
-		margin-top: -1px;
-	} 
-
-	.sensor_feeds {
-		float: left;
-		margin: 0px 5px;
-	}
-
-	.text {
-		padding: 0px 5px;
-		margin: -1px 5px 5px 0px;
-		float: left;
-		width: auto;
-		height: 25px;
-		font-size: 14px;
-		max-width: 200px;
-		text-overflow: ellipsis;
-	}
-
-	.active {
-		background-color: #FFFEED;
-	}
-
-	.center {
-		text-align: center;
-	}
-
-	#add {
-		margin-right: 0px;
-	}
-	#add div {
-		font-size: 150%;
-		font-weight: bold;
-		margin-top: -2px;
-	}
-
-	.icon i {
-		font-size: 16px;
-	}
-
-	#list {
-		margin-top: 5px;
-	}
-
-	.transparent {
-		color: transparent;
-	}
-
-	.sensor_feeds {
-		overflow: hidden;
-		padding-top: 1px;
-		width: 520px;
-		height: 25px;
-		position: relative;
-		float: left;
-	}
-	.ctrl {
-		float: left;
-		padding-top: 1px;
-	}
-
-	.ctrl i {
-		padding-top: 3px;
-	}
-	#panelmenu {
-		-webkit-backface-visibility: hidden;		
-		-webkit-transform: translateX(0px);
-	}
-
-	#panelmenu .list {
-		height: 28px;
-		-webkit-transform: translateX(0px);
-	}
-
-	.smooth {
-		transition-duration: 0.5s;
-		-webkit-transition-duration: 0.5s;			
-	}
-	</style>
-
+	<link rel="stylesheet" href="styles/panel_menu.css"></link>
+	<script src="lib/panel_menu.js"></script>
 <script>
 
 Hammer.plugins.fakeMultitouch();
 
-var sensor_feeds = [];
-
-var get_inner_width = function () {
-	var width = 25;
-	for (var i=0; i<=sensor_feeds.length; i++) {
-		width += Math.ceil($(sensor_feeds[i]).width()) + 16;
-	}
-	return width;
-}
-
-var move = function (pos) {
-	$("#panelmenu").addClass("smooth");
-	window.setTimeout(function () { $("#panelmenu").removeClass("smooth"); }, 500);
-	$("#panelmenu").css(transformProp, "translateX(" + pos + "px)");
-	$("#panelmenu").data("pos", pos);
-}
-
-var move_start = function() {
-	move(0);
-}
-
-var stop = false;
-var last_pos = 0;
-var update_inner = function () {
-	var t = 100;
-	window.setTimeout(function () {
-		var width = get_inner_width();
-		$("#inner-list").width(width);
-
-		window.setTimeout(function () { stop = false; }, 100);
-		var pos = $("#panelmenu").data("pos");
-		var max = $("#inner-list").width() - $("#panelmenu").width();
-
-		if (pos > 0) {
-			move(0);
-		} else if (Math.abs(pos) > max) {
-			move(-max);
-		}
-		last_pos = 0;
-	}, t);
-}
-
-var inner_pos = 0;
-var inner_index = 0;
-var move_inner = function () {
-	if ($(this).hasClass("left")) {
-		inner_index--;
-	} else {
-		inner_index++;
-	}
-}
-
-var unset_active = function (elem) {
-	$(".inner .list .active").removeClass("active");
-}
-
-var destroy_sensor_feed = function (elem) {
-	for (var i=0; i<=sensor_feeds.length; i++) {
-		if (sensor_feeds[i] == elem) {
-			elem.parentNode.removeChild(elem);
-			sensor_feeds.splice(i,1);
-			return;
-		}
-	}
-}
-
-var blur = function (elem) {
-	if ($(elem).val() == "") {
-		destroy_sensor_feed(elem);
-	} else {
-		$(elem).addClass("center");
-		$(elem).attr("readonly", "readonly");
-		$(elem).data("focus", false);		
-	}
-	update_inner();
-};
-
-var add_sensor_feed = function (elem, name) {
-	var new_sensor_feed = document.createElement("input");
-	$(new_sensor_feed).addClass("icon text center");
-	$(new_sensor_feed).attr("id", "sensor_feed_" + sensor_feeds.length);
-	$(new_sensor_feed).attr("size", (name != undefined ? name.length + 1 : 3));
-	$(new_sensor_feed).attr("value", (name != undefined ? name : ""));
-	$(new_sensor_feed).attr("readonly", "readonly");
-	$(new_sensor_feed).attr("type", "text");
-	$(new_sensor_feed).data("focues", false);
-
-	$(new_sensor_feed).click(function () {
-		if (stop || $(new_sensor_feed).data("focus"))
-			return;
-		unset_active(this);
-
-		$(this).addClass("active");
-		console.log($(this).attr("id") + " click");
-	});
-
-	$(new_sensor_feed).dblclick(function () {
-		if (stop || $(new_sensor_feed).data("focus"))
-			return;
-		unset_active(this);
-
-		$(new_sensor_feed).data("focus", true);
-		$(this).removeClass("center");
-		$(this).removeAttr("readonly");
-
-		console.log($(this).attr("id") + " dblclick");
-		var val = $(this).val();
-		var that = this;
-		window.setTimeout(function () { $(that).val(val); $(that).focus(); }, 100);
-	});
-
-	$(new_sensor_feed).keydown(function(e) {
-		var len = $(this).val().length;
-		if (len > 2) 
-			$(this).attr("size", len + 1);
-		if(e.which == 13) {
-			$(this).blur();
-		}
-	});
-
-	$(new_sensor_feed).blur(function () { blur(this); });
-	
-	$("#inner-list").prepend($(new_sensor_feed));
-	update_inner();
-
-	sensor_feeds.push( new_sensor_feed );
-	return new_sensor_feed;
-};
-
-var transformProp;
-var prefixes = 'transform WebkitTransform MozTransform OTransform msTransform'.split(' ');
-for(var i = 0; i < prefixes.length; i++) {
-	if(document.createElement('div').style[prefixes[i]] !== undefined) {
-		transformProp = prefixes[i];
-	}
-}
-
 $(document).ready(function () {
-	$("#panel #add").click(function () {
-		unset_active(this);
-		var new_sensor_feed = add_sensor_feed(this);
-		move_start();
-		$(new_sensor_feed).trigger("dblclick");
-	});
-
 	add_sensor_feed($("#panel #add"), "wrt00");
 	add_sensor_feed($("#panel #add"), "wrt01");
 	add_sensor_feed($("#panel #add"), "ThingSpeak");
 	add_sensor_feed($("#panel #add"), "Xively");
 	add_sensor_feed($("#panel #add"), "Open.Sen.Se");
-
 	add_sensor_feed($("#panel #add"), "Foo");
 	add_sensor_feed($("#panel #add"), "Bar");
 	add_sensor_feed($("#panel #add"), "Baz");
-
-	$("#panel .move").click(move_inner);
-	$("#panelmenu").data("pos", 0);
-
-	var hammertime = new Hammer(document.getElementById("panelmenu"), {
-		prevent_default: true,
-		no_mouseevents: true
-	});
-
-	hammertime.on("dragstart", function (e) { 
-		stop = true;
-		last_pos = 0;
-	});
-
-	hammertime.on("dragend", update_inner);
-
-	hammertime.on("drag", function (e) {
-		var evt = ["left", "right"];
-		if (evt.indexOf(e.gesture.direction)>=0) {
-			var pos = $("#panelmenu").data("pos");
-			pos += e.gesture.deltaX - last_pos;
-			$("#panelmenu").data("pos", pos);
-			last_pos = last_pos = e.gesture.deltaX;;
-			$("#panelmenu").css(transformProp, "translateX(" + pos + "px)");
-		}
-	});
 });
-
 </script>
 </head>
 <body>
@@ -339,10 +61,10 @@ $(document).ready(function () {
 				</div>
 			</div>
 
-			<div id="list">
+			<!--div id="list">
 				<button class="icon"><i class="fa fa-check"></i></button>
 				<button class="icon"><i class="fa fa-check transparent"></i></button>
-			</div>
+			</div-->
 
 			<div class="handle show_down">
 				<div class="heading">Sensor Feeds</div>
