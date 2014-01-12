@@ -60,7 +60,7 @@
 
 	.text {
 		padding: 0px 5px;
-		margin: -1px 5px 5px 0px;
+		margin: -1px 0px 5px 5px;
 		float: left;
 		width: auto;
 		height: 25px;
@@ -151,10 +151,6 @@ var move = function (pos) {
 	$("#panelmenu").data("pos", pos);
 }
 
-var move_start = function() {
-	move(0);
-}
-
 var stop = false;
 var last_pos = 0;
 var update_inner = function () {
@@ -174,6 +170,15 @@ var update_inner = function () {
 		}
 		last_pos = 0;
 	}, t);
+}
+
+var move_end = function () {
+	var width = get_inner_width();
+	$("#inner-list").width(width);
+	window.setTimeout(function () {
+		var max = $("#inner-list").width() - $("#panelmenu").width();
+		move(-max);
+	}, 100);
 }
 
 var inner_pos = 0;
@@ -236,11 +241,13 @@ var add_sensor_feed = function (elem, name) {
 		unset_active(this);
 
 		$(new_sensor_feed).data("focus", true);
+
 		$(this).removeClass("center");
 		$(this).removeAttr("readonly");
 
 		console.log($(this).attr("id") + " dblclick");
 		var val = $(this).val();
+		
 		var that = this;
 		window.setTimeout(function () { $(that).val(val); $(that).focus(); }, 100);
 	});
@@ -256,7 +263,7 @@ var add_sensor_feed = function (elem, name) {
 
 	$(new_sensor_feed).blur(function () { blur(this); });
 	
-	$("#inner-list").prepend($(new_sensor_feed));
+	$("#add").after($(new_sensor_feed));
 	update_inner();
 
 	sensor_feeds.push( new_sensor_feed );
@@ -275,7 +282,6 @@ $(document).ready(function () {
 	$("#panel #add").click(function () {
 		unset_active(this);
 		var new_sensor_feed = add_sensor_feed(this);
-		move_start();
 		$(new_sensor_feed).trigger("dblclick");
 	});
 
@@ -287,7 +293,7 @@ $(document).ready(function () {
 
 	add_sensor_feed($("#panel #add"), "Foo");
 	add_sensor_feed($("#panel #add"), "Bar");
-	add_sensor_feed($("#panel #add"), "Baz");
+	//add_sensor_feed($("#panel #add"), "Baz");
 
 	$("#panel .move").click(move_inner);
 	$("#panelmenu").data("pos", 0);

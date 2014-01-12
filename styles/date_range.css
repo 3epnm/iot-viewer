@@ -1,38 +1,21 @@
-div.date_range {
+div.date_range div.date_range_container .handle .heading {
 	position: absolute;
-	bottom: 0px;
-	width: 100%;
-	height: 205px;
-	padding: 0;
-	text-align: center;
-	transition-timing-function: ease-in;
-	-webkit-transition-timing-function: ease-in;
-	transition-duration: 0.2s;
-	-webkit-transition-duration: 0.2s;
+	font-size: 90%;
+	font-family: 'Exo 2', sans-serif;
+	text-align: left;
+	left: 7px;
+	top: 3px;
 }
 
-div.date_range .handle {
-	height: 25px;
-}
-
-div.date_range .handle .up, div.date_range .handle .down {
+div.date_range div.date_range_container .handle button {
+	position: absolute;
+	font-size: 70%;
+	font-family: 'Exo 2', sans-serif;
+	right: 3px;
+	top: 2px;
 	display: none;
-	margin-top: 7px;
 }
 
-div.date_range .show_up .up {
-	display: inline;
-}
-
-div.date_range .show_down .down {
-	display: inline;
-}
-
-div.date_range_close {
-	transform: translate(0px,180px);
-	-ms-transform: translate(0px,180px);
-	-webkit-transform: translate(0px,180px);
-}
 div.date_range form {
 	position: relative;
 }
@@ -71,24 +54,6 @@ div.date_range_from, div.date_range_to {
 	float: left;
 	text-align: left;
 	margin: 5px 10px;
-}
-
-div.date_range div.date_range_container .handle .heading {
-	position: absolute;
-	font-size: 90%;
-	font-family: 'Exo 2', sans-serif;
-	text-align: left;
-	left: 7px;
-	top: 3px;
-}
-
-div.date_range div.date_range_container .handle button {
-	position: absolute;
-	font-size: 70%;
-	font-family: 'Exo 2', sans-serif;
-	right: 3px;
-	top: 2px;
-	display: none;
 }
 
 div.date_range div.date_range_container .lines {

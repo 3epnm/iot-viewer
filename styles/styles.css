@@ -5,6 +5,7 @@
     -ms-user-select:none;
     user-select:none;
 }
+
 body {
 	background-color: #eee;			
 	width: 100%;
@@ -30,4 +31,58 @@ body {
 	line-height: 30px;
 	text-align: center;
 	margin: 5px;
+}
+
+div.menu {
+	position: absolute;
+	width: 100%;
+	height: 205px;
+	padding: 0;
+	transition-timing-function: ease-in;
+	-webkit-transition-timing-function: ease-in;
+	transition-duration: 0.2s;
+	-webkit-transition-duration: 0.2s;
+	text-align: center;
+}
+
+div.menu_container {
+	text-align: left;
+}
+
+div.upper {
+	top: 0px;
+}
+
+div.lower {
+	bottom: 0px;
+}
+
+div.menu .handle {
+	height: 25px;
+	text-align: center;
+}
+
+div.menu .handle .up, div.menu .handle .down {
+	display: none;
+	margin-top: 7px;
+}
+
+div.menu .show_up .up {
+	display: inline;
+}
+
+div.menu .show_down .down {
+	display: inline;
+}
+
+div.lower_menu_close {
+	transform: translate(0px,180px);
+	-ms-transform: translate(0px,180px);
+	-webkit-transform: translate(0px,180px);
+}
+
+div.upper_menu_close {
+	transform: translate(0px,-200px);
+	-ms-transform: translate(0px,-200px);
+	-webkit-transform: translate(0px,-200px);
 }

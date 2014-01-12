@@ -14,10 +14,10 @@
 
 .entypo {
 	display: inline-block;
-	width: 40px;
-	height: 40px;
+	_width: 40px;
+	_height: 40px;
 	-webkit-font-smoothing: antialiased;
-	font-size: 50px;
+	_font-size: 50px;
 	line-height: 1;
 	font-family: 'Entypo';
 	text-decoration: inherit;

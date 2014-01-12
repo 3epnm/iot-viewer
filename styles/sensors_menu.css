@@ -1,0 +1,44 @@
+div.sensors_menu div.sensors_menu_container {
+	position: relative;
+	display: inline-block;
+	max-width: 580px;
+	min-width: 580px;
+	height: 220px;
+	background-color: #fefefe;
+	padding: 10px 10px 0px 10px;
+	overflow: hidden;
+    top: -5px;
+
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	border-radius: 5px;
+
+	-webkit-box-shadow: 0px 1px 5px 1px rgba(150, 150, 150, 0.33);
+	-moz-box-shadow:    0px 1px 5px 1px rgba(150, 150, 150, 0.33);
+	box-shadow:         0px 1px 5px 1px rgba(150, 150, 150, 0.33);
+}
+
+div.sensors_menu div.sensors_menu_container .handle {
+	bottom: 0px;
+	left: 0px;
+	position: absolute;
+	width: 100%;
+} 
+
+div.sensors_menu div.sensors_menu_container .handle .heading {
+	position: absolute;
+	font-size: 90%;
+	font-family: 'Exo 2', sans-serif;
+	text-align: left;
+	left: 7px;
+	top: 3px;
+}
+
+div.sensors_menu div.sensors_menu_container .handle button {
+	position: absolute;
+	font-size: 70%;
+	font-family: 'Exo 2', sans-serif;
+	right: 3px;
+	top: -2px;
+	display: none;
+}
