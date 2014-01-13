@@ -7,6 +7,9 @@
 	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 	
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
+	<script src="contrib/underscore/underscore.js"></script>
+	<script src="contrib/backbone/backbone.js"></script>
+	<script src="contrib/backbone/backbone.localStorage.js"></script>
 
 	<script src="contrib/hammerjs/hammer.min.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
@@ -16,52 +19,186 @@
 	<link rel="stylesheet" href="contrib/drumjs/drum.min.css"></link>
 	<script src="contrib/drumjs/drum.min.js"></script>
 	
-	<link rel="stylesheet" href="styles/sensors_menu.css"></link>
-	<script src="lib/sensors_menu.js"></script>
+	<link rel="stylesheet" href="styles/menu.css"></link>
+	<script src="lib/menu.js"></script>
 	
 	<link rel="stylesheet" href="styles/date_range.css"></link>
 	<script src="lib/date_range.js"></script>
 
 	<link rel="stylesheet" href="contrib/panelmenu/panelmenu.css"></link>
 	<script src="contrib/panelmenu/panelmenu.js"></script>
+<style>
+#form {
+	float: left;
+	clear: both;
+	width: 100%;
+	height: 160px;
+	background: rgb(240, 240, 240);
+}
+</style>
 <script>
 
 Hammer.plugins.fakeMultitouch();
 
+window.ProviderDriver = Backbone.Model.extend({
+    initialize: function() {
+         _.bindAll(this, "urls", "headers", "complete", "load");
+    },	
+	defaults: function() {
+		return {
+			name: "abstract driver",
+			order: Providers.nextOrder()
+		};
+	},
+	urls: function () {
+		return {
+
+		}
+	},
+	headers: function () {
+
+	},
+	complete: function (str) {
+		var data = this;
+		return str.replace(/\{%(\w*)\}/g, function(m, key) {
+			return data.has(key) ?data.get(key) : "";
+		});
+	},
+	load: function (url, method, data, callback) {
+		var that = this;
+		var url = this.complete((this.urls())[url]);
+		$.ajax({ 
+			url: url,
+			complete: function (result) {
+				callback($.parseJSON( result.responseText ));
+			},
+			beforeSend : function (xhr) {
+				var headers = that.headers();
+				for (var name in headers) {
+					xhr.setRequestHeader(name, headers[name]);
+				}
+			}
+		});			
+	}
+});
+
+window.ProviderXively = ProviderDriver.extend({
+	defaults : function () {
+		return {
+			endpoint: "https://api.xively.com/v2/feeds/{%feedid}",
+			feedid: "",
+			apikey: ""
+		}
+	},
+	headers : function () {
+		return {
+			"X-ApiKey" : this.get('apikey')
+		}
+	},
+	urls : function () {
+		return {
+			feed_info : this.get('endpoint') + "?content=summary"
+		}
+	}
+});
+
+window.ProviderThingSpeak = ProviderDriver.extend({
+	defaults : function () {
+		return {
+			endpoint: "http://api.thingspeak.com/channels/{%channelid}/feed.json",
+			channelId: "",
+			apikey: ""
+		}
+	},
+	headers : function () {
+		return {
+			"X-THINGSPEAKAPIKEY" : this.get('apikey')
+		}
+	},
+	urls : function () {
+		return {
+			feed_info : this.get('endpoint') + "?result=1"
+		}
+	}
+});
+
+//http://api.thingspeak.com/channels/8710/feed.json?key=ROYL1S50JO5B95KH
+
+var d = new ProviderXively({
+	name : "Xively",
+	feedid : "1170443106",
+	apikey : "kWFQdarjx44rYoERVJUeLWar1Yl6xX2oW0x0FfLKV1DfLaIC"
+});
+d.load("feed_info", "get", null, function (result) { console.dir(result); });
+
+var f = new ProviderThingSpeak({
+	name : "ThingSpeak",
+	channelid : "8710",
+	apikey : "ROYL1S50JO5B95KH"
+});
+f.load("feed_info", "get", null, function (result) { console.dir(result); });
+
+window.Provider = Backbone.Model.extend({
+	defaults: function() {
+		return {
+			name: "empty provider...",
+			menuid: null,
+			order: Providers.nextOrder(),
+			driver: null
+		};
+	}
+});
+
+window.ProviderList = Backbone.Collection.extend({
+	model: Provider,
+	localStorage: new Backbone.LocalStorage("ProviderList"),
+
+	nextOrder: function() {
+		if (!this.length) return 1;
+		return this.last().get('order') + 1;
+	},
+	comparator: 'order'
+});
+
+window.Providers = new ProviderList;
+Providers.fetch();
+
 $(document).ready(function () {
+
+	$(".mainmenu .handle").trigger("click");
+
 	$("#panel").panelmenu({
 		onCreate : function (e) {
-			console.log("create");
-			console.dir(e); 
+			if (!Providers.findWhere({menuid: $(e).attr("id")})) {
+				Providers.create({menuid: $(e).attr("id")});
+			}
 		},
 		onRemove : function (e) {
-			console.log("remove");
-			console.dir(e);
+			var provider = Providers.findWhere({menuid: $(e).attr("id")});
+			Providers.sync("delete", provider);
 		},
 		onChange : function (e) {
-			console.log("change");
-			console.dir(e);
+			var provider = Providers.findWhere({menuid: $(e).attr("id")});
+			provider.set({name: $(e).val()});
+			provider.save();
 		},
 		onSelect : function (e) {
 			console.log("select");
 			console.dir(e);
 		}
 	});
-	$("#panel").panelmenu('add', 'wrt00');
-	$("#panel").panelmenu('add', 'wrt01');
-	$("#panel").panelmenu('add', 'ThingSpeak');
-	$("#panel").panelmenu('add', 'Xively');
-	$("#panel").panelmenu('add', 'Open.Sen.Se');
-	$("#panel").panelmenu('add', 'Foo');
-	$("#panel").panelmenu('add', 'Bar');
-	$("#panel").panelmenu('add', 'Baz');
+
+	Providers.forEach (function (item) {
+		$("#panel").panelmenu('add', item.get("name"), item.get("menuid"));
+	});
+
 });
 </script>
 </head>
 <body>
 <div class="wrapper">
-	<div class="menu upper sensors_menu upper_menu_close">
-		<div class="sensors_menu_container menu_container">
+	<div class="menu upper mainmenu upper_menu_close">
+		<div class="mainmenu_container menu_container">
 
 			<div id="panel" class="panelmenu">
 				<div class="ctrl">
@@ -79,26 +216,36 @@ $(document).ready(function () {
 				</div>
 			</div>
 
-			<!--div id="list">
-				<button class="icon"><i class="fa fa-check"></i></button>
-				<button class="icon"><i class="fa fa-check transparent"></i></button>
-			</div-->
+			<div id="form"></div>
 
 			<div class="handle show_down">
 				<div class="heading">Sensor Feeds</div>
-				<svg width="40" height="10" class="up" xmlns="http://www.w3.org/2000/svg">
-					<g>
-						<line stroke="#555555" fill="none" x1="0" y1="8" x2="20" y2="1"/>
-						<line stroke="#555555" fill="none" x1="20" y1="1" x2="40" y2="8"/>
-					</g>
+				<svg class="up" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path 
+						fill="none" 
+						stroke="#555555" 
+						stroke-width="1px" 
+						stroke-linecap="butt" 
+						stroke-linejoin="miter" 
+						stroke-opacity="1" 
+						d="m0,11l22,-9l22,9">
+					</path>
+				</g>
 				</svg>
-				<svg width="40" height="10" class="down" xmlns="http://www.w3.org/2000/svg">
-					<g>
-						<line stroke="#555555" fill="none" x1="0" y1="1" x2="20" y2="8"/>
-						<line stroke="#555555" fill="none" x1="20" y1="8" x2="40" y2="1"/>
-					</g>
+				<svg class="down" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path 
+						fill="none" 
+						stroke="#555555"
+						stroke-width="1px" 
+						stroke-linecap="butt" 
+						stroke-linejoin="miter" 
+						stroke-opacity="1" 
+						d="m0,0l22,9l22,-9">
+					</path>
+				</g>
 				</svg>
-				<button>Set</button>
 			</div>
 		</div>
 	</div>
@@ -107,17 +254,31 @@ $(document).ready(function () {
 		<div class="date_range_container outside menu_container">
 			<div class="handle show_up">
 				<div class="heading">Date Time Range</div>
-				<svg width="40" height="10" class="up" xmlns="http://www.w3.org/2000/svg">
-					<g>
-						<line stroke="#555555" fill="none" x1="0" y1="8" x2="20" y2="1"/>
-						<line stroke="#555555" fill="none" x1="20" y1="1" x2="40" y2="8"/>
-					</g>
+				<svg class="up" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path 
+						fill="none" 
+						stroke="#555555" 
+						stroke-width="1px" 
+						stroke-linecap="butt" 
+						stroke-linejoin="miter" 
+						stroke-opacity="1" 
+						d="m0,11l22,-9l22,9">
+					</path>
+				</g>
 				</svg>
-				<svg width="40" height="10" class="down" xmlns="http://www.w3.org/2000/svg">
-					<g>
-						<line stroke="#555555" fill="none" x1="0" y1="1" x2="20" y2="8"/>
-						<line stroke="#555555" fill="none" x1="20" y1="8" x2="40" y2="1"/>
-					</g>
+				<svg class="down" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path 
+						fill="none" 
+						stroke="#555555"
+						stroke-width="1px" 
+						stroke-linecap="butt" 
+						stroke-linejoin="miter" 
+						stroke-opacity="1" 
+						d="m0,0l22,9l22,-9">
+					</path>
+				</g>
 				</svg>
 				<button>Set</button>
 			</div>

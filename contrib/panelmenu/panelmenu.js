@@ -57,7 +57,7 @@
 
 				var max = $(obj.inner).width() - $(obj.menu).width();
 
-				if (obj.pos > 0) {
+				if (obj.pos >= 0) {
 					move(0);
 				} else if (Math.abs(obj.pos) > max) {
 					move(-max);
@@ -96,10 +96,10 @@
 			update();
 		};
 
-		this.add_item = function (name) {
+		this.add_item = function (name, id) {
 			var item = document.createElement("input");
 			$(item).addClass("item text center");
-			$(item).attr("id", "item_" + obj.menu_items.length);
+			$(item).attr("id", (id ? id : "item_" + obj.menu_items.length));
 			$(item).attr("size", (name != undefined ? name.length + 1 : 3));
 			$(item).attr("value", (name != undefined ? name : ""));
 			$(item).attr("readonly", "readonly");
@@ -144,6 +144,10 @@
 				}
 			});
 
+			$(item).keyup(function(e) {
+				update();
+			});
+
 			$(item).blur(function () { blur(this); });
 			
 			$(obj.inner).prepend($(item));
@@ -159,7 +163,7 @@
 
 		$(obj.add).click(function () {
 			deactivate(this);
-			var item = obj.add_item(this);
+			var item = obj.add_item('');
 			move(0);
 			$(item).trigger("dblclick");
 		});
@@ -168,7 +172,7 @@
 			var pw = $(obj.menu).width();
 			var ph = pw/2;
 			var iw = $(obj.inner).width();
-			if ($(this).hasClass("left")) {
+			if ($(this).hasClass("right")) {
 				if (obj.pos - ph > iw - pw)
 					move(obj.pos - ph);
 				else
@@ -205,8 +209,8 @@
 	}
 
 	var methods = {
-		add : function (item) {
-			$(this).data('panelmenu').add_item(item);
+		add : function (item, id) {
+			$(this).data('panelmenu').add_item(item, id);
 		},
 		init : function (options) {
 			var transformProp = false;

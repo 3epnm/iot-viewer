@@ -1,4 +1,4 @@
-div.sensors_menu div.sensors_menu_container {
+div.mainmenu div.mainmenu_container {
 	position: relative;
 	display: inline-block;
 	max-width: 580px;
@@ -18,14 +18,14 @@ div.sensors_menu div.sensors_menu_container {
 	box-shadow:         0px 1px 5px 1px rgba(150, 150, 150, 0.33);
 }
 
-div.sensors_menu div.sensors_menu_container .handle {
+div.mainmenu div.mainmenu_container .handle {
 	bottom: 0px;
 	left: 0px;
 	position: absolute;
 	width: 100%;
 } 
 
-div.sensors_menu div.sensors_menu_container .handle .heading {
+div.mainmenu div.mainmenu_container .handle .heading {
 	position: absolute;
 	font-size: 90%;
 	font-family: 'Exo 2', sans-serif;
@@ -34,7 +34,7 @@ div.sensors_menu div.sensors_menu_container .handle .heading {
 	top: 3px;
 }
 
-div.sensors_menu div.sensors_menu_container .handle button {
+div.mainmenu div.mainmenu_container .handle button {
 	position: absolute;
 	font-size: 70%;
 	font-family: 'Exo 2', sans-serif;
