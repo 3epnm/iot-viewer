@@ -97,7 +97,7 @@ div.lower_menu_close {
 }
 
 div.upper_menu_close {
-	transform: translate(0px,-390px);
-	-ms-transform: translate(0px,-390px);
-	-webkit-transform: translate(0px,-390px);
+	transform: translate(0px,-40px);
+	-ms-transform: translate(0px,-40px);
+	-webkit-transform: translate(0px,-40px);
 }

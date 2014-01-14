@@ -3,7 +3,7 @@ div.mainmenu div.mainmenu_container {
 	display: inline-block;
 	max-width: 580px;
 	min-width: 580px;
-	height: 420px;
+	height: 70px;
 	background-color: #fefefe;
 	padding: 10px 10px 0px 10px;
 	overflow: hidden;
@@ -16,6 +16,8 @@ div.mainmenu div.mainmenu_container {
 	-webkit-box-shadow: 0px 1px 5px 1px rgba(150, 150, 150, 0.33);
 	-moz-box-shadow:    0px 1px 5px 1px rgba(150, 150, 150, 0.33);
 	box-shadow:         0px 1px 5px 1px rgba(150, 150, 150, 0.33);
+
+	-webkit-transition: height 0.3s ease-in-out;
 }
 
 div.mainmenu div.mainmenu_container .handle {

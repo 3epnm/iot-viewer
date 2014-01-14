@@ -2,10 +2,9 @@
 <head>
 	<meta charset='utf-8'>
 	<meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
+
 	<title>Data Monitor</title>
-	<!--link href="http://fonts.googleapis.com/css?family=Exo+2:200,400,600" rel="stylesheet" type="text/css"-->
-	<!--link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"-->
-	
+
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
 
 	<link href="contrib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
@@ -23,6 +22,11 @@
 	<script src="lib/om/ProviderDriverList.js"></script>
 	<script src="lib/om/Provider.js"></script>
 	<script src="lib/om/ProviderList.js"></script>
+
+	<link rel="stylesheet" href="styles/form.css"></link>
+	<script src="lib/views/ConfirmView.js"></script>
+	<script src="lib/views/ErrorView.js"></script>
+	<script src="lib/views/FormView.js"></script>
 
 	<script src="lib/views/ProviderThingSpeakInitializeView.js"></script>
 	<script src="lib/views/ProviderXivelyInitializeView.js"></script>
@@ -46,8 +50,6 @@
 	<link rel="stylesheet" href="contrib/panelmenu/panelmenu.css"></link>
 	<script src="contrib/panelmenu/panelmenu.js"></script>
 
-	<link rel="stylesheet" href="styles/form.css"></link>
-
 	<script type="text/template" id="thingspeak_initialize">
 		<h5>ThingSpeak Inititalisation</h5>
 		<div class="form-group">
@@ -59,6 +61,7 @@
 			<input type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
 		</div>
 		<button class="initialize btn btn-default">save</button>
+		<button class="hide delete btn btn-default">delete</button>
 	</script>
 
 	<script type="text/template" id="xively_initialize">
@@ -72,6 +75,7 @@
 			<input type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
 		</div>
 		<button class="initialize btn btn-default">save</button>
+		<button class="hide delete btn btn-default">delete</button>
 	</script>
 
 	<script type="text/template" id="drivers_avail">
@@ -84,75 +88,42 @@
 		</table>
 	</script>
 
-<script>
+	<script type="text/template" id="error_template">
+		<table class="center">
+		<tr>
+			<td><h4><%= headline %></h4></td>
+		</tr>
+		<tr>
+			<td><%= message %></td>
+		</tr>
+		<tr>
+			<td>
+				<div class="btn-group"><button class="ok btn btn-default">ok</button></div>
+			</td>
+		</tr>
+		</table>
+	</script>	
 
-var FormView = function () {
-	this.showView = function (view) {
-		if (this.currentView) {
-			this.currentView.close();
-		}
-
-		this.currentView = view;
-		this.currentView.render();
-
-		$("#form").html(this.currentView.el);
-	}
-}
-
-Hammer.plugins.fakeMultitouch();
-
-$(document).ready(function () {
-	$(".mainmenu .handle").trigger("click");
-
-	var myFormView = new FormView();
-
-	$("#panel").panelmenu({
-		onCreate : function (e) {
-			if (!Providers.findWhere({menuid: $(e).attr("id")})) {
-				Providers.create({menuid: $(e).attr("id")});
-			}
-		},
-		onRemove : function (e) {
-			var provider = Providers.findWhere({menuid: $(e).attr("id")});
-			if (provider.has("driver")) {
-				var driver = ProviderDrivers.findWhere({id: provider.get("driver")});
-				ProviderDrivers("delete", driver);
-			}
-			Providers.sync("delete", provider);
-		},
-		onChange : function (e) {
-			var provider = Providers.findWhere({menuid: $(e).attr("id")});
-			provider.set({name: $(e).val()});
-			provider.save();
-			if (!provider.has("driver")) {
-				$(e).trigger("click");
-			}
-		},
-		onSelect : function (e) {
-			var provider = Providers.findWhere({menuid: $(e).attr("id")});
-			var drivers = new DriversAvail({ el: $("#form"), model : provider });
-			if (!provider.has("driver")) {
-				drivers.render();
-			} else {
-				var driver = ProviderDrivers.findWhere({id: provider.get("driver")});
-				myFormView.showView(new drivers.initviews[driver.get("name")]({
-					model : driver
-				}))
-			}
-		}
-	});
-
-	Providers.forEach (function (item) {
-		$("#panel").panelmenu('add', item.get("name"), item.get("menuid"));
-	});
-});
-</script>
+	<script type="text/template" id="confirm_template">
+		<table class="center">
+		<tr>
+			<td><%= msg %></td>
+		</tr>
+		<tr>
+			<td>
+				<div class="btn-group">
+					<button class="yes btn btn-default">yes</button>
+					<button class="no btn btn-default">no</button>
+				</div>
+			</td>
+		</tr>
+		</table>
+	</script>
 </head>
 <body>
 <div class="wrapper">
 	<div class="menu upper mainmenu upper_menu_close">
 		<div class="mainmenu_container menu_container">
-
 			<div id="panel" class="panelmenu">
 				<div class="ctrl">
 					<button class="icon move left"><span class="glyphicon glyphicon-chevron-left"></span></button>
@@ -168,9 +139,7 @@ $(document).ready(function () {
 					<button class="icon move right"><span class="glyphicon glyphicon-chevron-right"></span></button>
 				</div>
 			</div>
-
-			<div id="form"></div>
-
+			<div id="form" class="form"></div>
 			<div class="handle show_down">
 				<div class="heading">Sensor Feeds</div>
 				<svg class="up" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
@@ -543,6 +512,16 @@ $(document).ready(function () {
 			</div>
 		</div>
 	</div>
+</div>
+
+<div id="mask" class="mask">
+	<div class="wait"></div>
+</div>
+<div id="error" class="form">
+	<div class="error"></div>
+</div>
+<div id="confirm" class="form">
+	<div class="confirm"></div>
 </div>
 <script src="lib/main.js"></script>
 </body>
