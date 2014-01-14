@@ -3,13 +3,31 @@
 	<meta charset='utf-8'>
 	<meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
 	<title>Data Monitor</title>
-	<link href="http://fonts.googleapis.com/css?family=Exo+2:200,400,600" rel="stylesheet" type="text/css">
-	<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+	<!--link href="http://fonts.googleapis.com/css?family=Exo+2:200,400,600" rel="stylesheet" type="text/css"-->
+	<!--link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet"-->
 	
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
+
+	<link href="contrib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<script src="contrib/bootstrap/js/bootstrap.min.js"></script>
+
 	<script src="contrib/underscore/underscore.js"></script>
 	<script src="contrib/backbone/backbone.js"></script>
 	<script src="contrib/backbone/backbone.localStorage.js"></script>
+
+	<script src="lib/backbone-overrides.js"></script>
+
+	<script src="lib/om/ProviderDriver.js"></script>
+	<script src="lib/om/ProviderThingSpeak.js"></script>
+	<script src="lib/om/ProviderXively.js"></script>
+	<script src="lib/om/ProviderDriverList.js"></script>
+	<script src="lib/om/Provider.js"></script>
+	<script src="lib/om/ProviderList.js"></script>
+
+	<script src="lib/views/ProviderThingSpeakInitializeView.js"></script>
+	<script src="lib/views/ProviderXivelyInitializeView.js"></script>
+
+	<script src="lib/views/DriversAvail.js"></script>
 
 	<script src="contrib/hammerjs/hammer.min.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
@@ -27,145 +45,66 @@
 
 	<link rel="stylesheet" href="contrib/panelmenu/panelmenu.css"></link>
 	<script src="contrib/panelmenu/panelmenu.js"></script>
-<style>
-#form {
-	float: left;
-	clear: both;
-	width: 100%;
-	height: 160px;
-	background: rgb(240, 240, 240);
-}
-</style>
+
+	<link rel="stylesheet" href="styles/form.css"></link>
+
+	<script type="text/template" id="thingspeak_initialize">
+		<h5>ThingSpeak Inititalisation</h5>
+		<div class="form-group">
+			<label for="channelid" class="control-label">Channel ID</label>
+			<input type="text" value="<%= channelid %>"  name="channelid" class="channelid form-control input-sm">
+		</div>
+		<div class="form-group">
+			<label for="apikey" class="control-label">API Key</label>
+			<input type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
+		</div>
+		<button class="initialize btn btn-default">save</button>
+	</script>
+
+	<script type="text/template" id="xively_initialize">
+		<h5>Xively Inititalisation</h5>
+		<div class="form-group">
+			<label for="feedid" class="control-label">Feed ID</label>
+			<input type="text" value="<%= feedid %>"  name="feedid" class="feedid form-control input-sm">
+		</div>
+		<div class="form-group">
+			<label for="apikey" class="control-label">API Key</label>
+			<input type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
+		</div>
+		<button class="initialize btn btn-default">save</button>
+	</script>
+
+	<script type="text/template" id="drivers_avail">
+		<table class="center">
+		<tr>
+			<td>
+				<div class="btn-group"></div>
+			</td>
+		</tr>
+		</table>
+	</script>
+
 <script>
+
+var FormView = function () {
+	this.showView = function (view) {
+		if (this.currentView) {
+			this.currentView.close();
+		}
+
+		this.currentView = view;
+		this.currentView.render();
+
+		$("#form").html(this.currentView.el);
+	}
+}
 
 Hammer.plugins.fakeMultitouch();
 
-window.ProviderDriver = Backbone.Model.extend({
-    initialize: function() {
-         _.bindAll(this, "urls", "headers", "complete", "load");
-    },	
-	defaults: function() {
-		return {
-			name: "abstract driver",
-			order: Providers.nextOrder()
-		};
-	},
-	urls: function () {
-		return {
-
-		}
-	},
-	headers: function () {
-
-	},
-	complete: function (str) {
-		var data = this;
-		return str.replace(/\{%(\w*)\}/g, function(m, key) {
-			return data.has(key) ?data.get(key) : "";
-		});
-	},
-	load: function (url, method, data, callback) {
-		var that = this;
-		var url = this.complete((this.urls())[url]);
-		$.ajax({ 
-			url: url,
-			complete: function (result) {
-				callback($.parseJSON( result.responseText ));
-			},
-			beforeSend : function (xhr) {
-				var headers = that.headers();
-				for (var name in headers) {
-					xhr.setRequestHeader(name, headers[name]);
-				}
-			}
-		});			
-	}
-});
-
-window.ProviderXively = ProviderDriver.extend({
-	defaults : function () {
-		return {
-			endpoint: "https://api.xively.com/v2/feeds/{%feedid}",
-			feedid: "",
-			apikey: ""
-		}
-	},
-	headers : function () {
-		return {
-			"X-ApiKey" : this.get('apikey')
-		}
-	},
-	urls : function () {
-		return {
-			feed_info : this.get('endpoint') + "?content=summary"
-		}
-	}
-});
-
-window.ProviderThingSpeak = ProviderDriver.extend({
-	defaults : function () {
-		return {
-			endpoint: "http://api.thingspeak.com/channels/{%channelid}/feed.json",
-			channelId: "",
-			apikey: ""
-		}
-	},
-	headers : function () {
-		return {
-			"X-THINGSPEAKAPIKEY" : this.get('apikey')
-		}
-	},
-	urls : function () {
-		return {
-			feed_info : this.get('endpoint') + "?result=1"
-		}
-	}
-});
-
-//http://api.thingspeak.com/channels/8710/feed.json?key=ROYL1S50JO5B95KH
-
-var d = new ProviderXively({
-	name : "Xively",
-	feedid : "1170443106",
-	apikey : "kWFQdarjx44rYoERVJUeLWar1Yl6xX2oW0x0FfLKV1DfLaIC"
-});
-d.load("feed_info", "get", null, function (result) { console.dir(result); });
-
-var f = new ProviderThingSpeak({
-	name : "ThingSpeak",
-	channelid : "8710",
-	apikey : "ROYL1S50JO5B95KH"
-});
-f.load("feed_info", "get", null, function (result) { console.dir(result); });
-
-window.Provider = Backbone.Model.extend({
-	defaults: function() {
-		return {
-			name: "empty provider...",
-			menuid: null,
-			order: Providers.nextOrder(),
-			driver: null
-		};
-	}
-});
-
-window.ProviderList = Backbone.Collection.extend({
-	model: Provider,
-	localStorage: new Backbone.LocalStorage("ProviderList"),
-
-	nextOrder: function() {
-		if (!this.length) return 1;
-		return this.last().get('order') + 1;
-	},
-	comparator: 'order'
-});
-
-window.Providers = new ProviderList;
-Providers.fetch();
-
 $(document).ready(function () {
-
 	$(".mainmenu .handle").trigger("click");
+
+	var myFormView = new FormView();
 
 	$("#panel").panelmenu({
 		onCreate : function (e) {
@@ -175,23 +114,37 @@ $(document).ready(function () {
 		},
 		onRemove : function (e) {
 			var provider = Providers.findWhere({menuid: $(e).attr("id")});
+			if (provider.has("driver")) {
+				var driver = ProviderDrivers.findWhere({id: provider.get("driver")});
+				ProviderDrivers("delete", driver);
+			}
 			Providers.sync("delete", provider);
 		},
 		onChange : function (e) {
 			var provider = Providers.findWhere({menuid: $(e).attr("id")});
 			provider.set({name: $(e).val()});
 			provider.save();
+			if (!provider.has("driver")) {
+				$(e).trigger("click");
+			}
 		},
 		onSelect : function (e) {
-			console.log("select");
-			console.dir(e);
+			var provider = Providers.findWhere({menuid: $(e).attr("id")});
+			var drivers = new DriversAvail({ el: $("#form"), model : provider });
+			if (!provider.has("driver")) {
+				drivers.render();
+			} else {
+				var driver = ProviderDrivers.findWhere({id: provider.get("driver")});
+				myFormView.showView(new drivers.initviews[driver.get("name")]({
+					model : driver
+				}))
+			}
 		}
 	});
 
 	Providers.forEach (function (item) {
 		$("#panel").panelmenu('add', item.get("name"), item.get("menuid"));
 	});
-
 });
 </script>
 </head>
@@ -202,17 +155,17 @@ $(document).ready(function () {
 
 			<div id="panel" class="panelmenu">
 				<div class="ctrl">
-					<button class="icon move left"><i class="fa fa-chevron-left"></i></button>
+					<button class="icon move left"><span class="glyphicon glyphicon-chevron-left"></span></button>
 				</div>
 				<div class="outer">
 					<div class="items">
 						<div class="inner">
-							<button class="icon add" id="add"><i class="fa fa-plus"></i></button>
+							<button class="icon add" id="add"><span class="glyphicon glyphicon-plus"></span></button>
 						</div>
 					</div>
 				</div>
 				<div class="ctrl">
-					<button class="icon move right"><i class="fa fa-chevron-right"></i></button>
+					<button class="icon move right"><span class="glyphicon glyphicon-chevron-right"></span></button>
 				</div>
 			</div>
 

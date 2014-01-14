@@ -3,7 +3,7 @@ div.mainmenu div.mainmenu_container {
 	display: inline-block;
 	max-width: 580px;
 	min-width: 580px;
-	height: 220px;
+	height: 420px;
 	background-color: #fefefe;
 	padding: 10px 10px 0px 10px;
 	overflow: hidden;
@@ -28,17 +28,16 @@ div.mainmenu div.mainmenu_container .handle {
 div.mainmenu div.mainmenu_container .handle .heading {
 	position: absolute;
 	font-size: 90%;
-	font-family: 'Exo 2', sans-serif;
 	text-align: left;
-	left: 7px;
-	top: 3px;
+	left: 10px;
+	top: 4px;
 }
 
 div.mainmenu div.mainmenu_container .handle button {
 	position: absolute;
 	font-size: 70%;
-	font-family: 'Exo 2', sans-serif;
 	right: 3px;
 	top: -2px;
 	display: none;
+	ine-height: 1em !important;
 }
