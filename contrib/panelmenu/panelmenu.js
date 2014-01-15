@@ -161,14 +161,19 @@
 			return item;
 		};
 
-		$(obj.add).click(function () {
+		var hammeradd = new Hammer(obj.add, {
+			prevent_default: true,
+			no_mouseevents: true
+		});
+
+		hammeradd.on("tap", function () {
 			deactivate(this);
 			var item = obj.add_item('');
 			move(0);
 			$(item).trigger("dblclick");
 		});
 
-		$(".move", HTMLdiv).click(function () {
+		var move_handler = function () {
 			var pw = $(obj.menu).width();
 			var ph = pw/2;
 			var iw = $(obj.inner).width();
@@ -184,21 +189,35 @@
 					move(0);
 			}
 			$(this).blur();
-		});
+		}
 
-		var hammertime = new Hammer(obj.menu, {
+		var hammermoveleft = new Hammer($(".left", HTMLdiv)[0], {
 			prevent_default: true,
 			no_mouseevents: true
 		});
 
-		hammertime.on("dragstart", function (e) { 
+		hammermoveleft.on("tap", move_handler);
+
+		var hammermoveright = new Hammer($(".right", HTMLdiv)[0], {
+			prevent_default: true,
+			no_mouseevents: true
+		});
+
+		hammermoveright.on("tap", move_handler);
+
+		var hammermove = new Hammer(obj.menu, {
+			prevent_default: true,
+			no_mouseevents: true
+		});
+
+		hammermove.on("dragstart", function (e) { 
 			obj.interrupt = true;
 			obj.last = 0;
 		});
 
-		hammertime.on("dragend", update);
+		hammermove.on("dragend", update);
 
-		hammertime.on("drag", function (e) {
+		hammermove.on("drag", function (e) {
 			var evt = ["left", "right"];
 			if (evt.indexOf(e.gesture.direction)>=0) {
 				obj.pos += e.gesture.deltaX - obj.last;
