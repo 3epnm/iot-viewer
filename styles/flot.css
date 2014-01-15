@@ -1,0 +1,13 @@
+#flot {
+	width: 100%;
+	height: 100%;
+	border: solid 10px #EEEEEE;
+	border-bottom-width: 25px;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;  	
+}
+
+#flot .legend td {
+	padding: 5px;
+}

@@ -3,7 +3,7 @@
 	<meta charset='utf-8'>
 	<meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
 
-	<title>Data Monitor</title>
+	<title>Internet of Things Viewer</title>
 
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
 
@@ -16,26 +16,43 @@
 
 	<script src="lib/backbone-overrides.js"></script>
 
+	<script src="lib/om/AppData.js"></script>
+	<script src="lib/om/AppDataList.js"></script>
 	<script src="lib/om/ProviderDriver.js"></script>
+	<script src="lib/om/ProviderOpenSense.js"></script>
 	<script src="lib/om/ProviderThingSpeak.js"></script>
 	<script src="lib/om/ProviderXively.js"></script>
 	<script src="lib/om/ProviderDriverList.js"></script>
+	<script src="lib/om/Device.js"></script>
+	<script src="lib/om/DeviceList.js"></script>
 	<script src="lib/om/Provider.js"></script>
 	<script src="lib/om/ProviderList.js"></script>
 
 	<link rel="stylesheet" href="styles/form.css"></link>
+
 	<script src="lib/views/ConfirmView.js"></script>
 	<script src="lib/views/ErrorView.js"></script>
-	<script src="lib/views/FormView.js"></script>
-
+	<script src="lib/views/AppView.js"></script>
+	<script src="lib/views/AppConfigView.js"></script>
+	<script src="lib/views/ProviderOpenSenseInitializeView.js"></script>
 	<script src="lib/views/ProviderThingSpeakInitializeView.js"></script>
 	<script src="lib/views/ProviderXivelyInitializeView.js"></script>
-
 	<script src="lib/views/DriversAvail.js"></script>
+	<script src="lib/views/DevicesView.js"></script>
 
 	<script src="contrib/hammerjs/hammer.min.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
-	
+
+	<link rel="stylesheet" href="styles/flot.css"></link>
+
+	<script src="contrib/flot/jquery.flot.js"></script>
+	<script src="contrib/flot/jquery.flot.resize.js"></script>
+	<script src="contrib/flot/jquery.flot.crosshair.js"></script>
+	<script src="contrib/flot/jquery.flot.selection.js"></script>
+	<script src="contrib/flot/jquery.flot.time.js"></script>
+
+	<script src="lib/plot.js"></script>
+
 	<link rel="stylesheet" href="styles/styles.css"></link>
 
 	<link rel="stylesheet" href="contrib/drumjs/drum.min.css"></link>
@@ -76,6 +93,50 @@
 		</div>
 		<button class="initialize btn btn-default">save</button>
 		<button class="hide delete btn btn-default">delete</button>
+	</script>
+
+	<script type="text/template" id="devices_view">
+		<h5><%= title %></h5>
+		<% _.each( listItems, function( listItem ){ %>
+		<div class="form-group">
+			<div class="input-group input-group-sm">
+				<span class="input-group-addon">
+				<% if ( listItem.active) { %>
+					<input name="<%= listItem.id %>_activated" type="checkbox" checked="checked">
+				<% } else { %>
+					<input name="<%= listItem.id %>_activated" type="checkbox">
+				<% } %>
+				</span>
+				<input type="text" name="<%= listItem.id %>_name" value="<%= listItem.name %>" class="form-control">
+				<span class="input-group-addon device-addon_current-value"><%= listItem.current_value %></span>
+			</div>
+		</div>
+		<% }); %>
+		<button class="set btn btn-default">save</button>
+	</script>
+
+	<script type="text/template" id="appconfig_template">
+		<h5>Application Settings</h5>
+		<div class="checkbox">
+			<label>
+				<% if ( show_points ) { %>
+					<input name="show_points" type="checkbox" checked="checked">
+				<% } else { %>
+					<input name="show_points" type="checkbox">
+				<% } %>			
+				 Show points
+			</label>
+		</div>
+		<div class="checkbox">
+			<label>
+				<% if ( show_lines ) { %>
+					<input name="show_lines" type="checkbox" checked="checked">
+				<% } else { %>
+					<input name="show_lines" type="checkbox">
+				<% } %>			
+				 Show lines
+			</label>
+		</div>
 	</script>
 
 	<script type="text/template" id="drivers_avail">
@@ -122,6 +183,7 @@
 </head>
 <body>
 <div class="wrapper">
+	<div id="flot"></div>
 	<div class="menu upper mainmenu upper_menu_close">
 		<div class="mainmenu_container menu_container">
 			<div id="panel" class="panelmenu">
@@ -137,12 +199,13 @@
 				</div>
 				<div class="ctrl">
 					<button class="icon move right"><span class="glyphicon glyphicon-chevron-right"></span></button>
+					<button class="icon settings"><span class="glyphicon glyphicon glyphicon-cog"></span></button>
 				</div>
 			</div>
 			<div id="form" class="form"></div>
 			<div class="handle show_down">
 				<div class="heading">Sensor Feeds</div>
-				<svg class="up" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<svg class="up" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
 				<g>
 					<path 
 						fill="none" 
@@ -155,7 +218,7 @@
 					</path>
 				</g>
 				</svg>
-				<svg class="down" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<svg class="down" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
 				<g>
 					<path 
 						fill="none" 
@@ -176,7 +239,7 @@
 		<div class="date_range_container outside menu_container">
 			<div class="handle show_up">
 				<div class="heading">Date Time Range</div>
-				<svg class="up" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<svg class="up" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
 				<g>
 					<path 
 						fill="none" 
@@ -189,7 +252,7 @@
 					</path>
 				</g>
 				</svg>
-				<svg class="down" width="42" height="11" xmlns="http://www.w3.org/2000/svg">
+				<svg class="down" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
 				<g>
 					<path 
 						fill="none" 

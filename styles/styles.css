@@ -11,7 +11,6 @@ body {
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
-	font-family: arial,verdana,sans-serif;
 	margin: 0;
 }
 
@@ -51,13 +50,16 @@ input, button {
 div.menu {
 	position: absolute;
 	width: 100%;
-	height: 205px;
 	padding: 0;
 	transition-timing-function: ease-in;
 	-webkit-transition-timing-function: ease-in;
 	transition-duration: 0.2s;
 	-webkit-transition-duration: 0.2s;
 	text-align: center;
+}
+
+div.menu.lower {
+	height: 205px;
 }
 
 div.menu_container {
@@ -91,13 +93,13 @@ div.menu .show_down .down {
 }
 
 div.lower_menu_close {
-	transform: translate(0px,180px);
-	-ms-transform: translate(0px,180px);
-	-webkit-transform: translate(0px,180px);
+	transform: translateY(180px);
+	-ms-transform: translateY(180px);
+	-webkit-transform: translateY(180px);
 }
 
 div.upper_menu_close {
-	transform: translate(0px,-40px);
-	-ms-transform: translate(0px,-40px);
-	-webkit-transform: translate(0px,-40px);
+	transform: translateY(-40px);
+	-ms-transform: translateY(-40px);
+	-webkit-transform: translateY(-40px);
 }
