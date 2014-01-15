@@ -100,13 +100,18 @@
 			var item = document.createElement("input");
 			$(item).addClass("item text center");
 			$(item).attr("id", (id ? id : "item_" + obj.menu_items.length));
-			$(item).attr("size", (name != undefined ? name.length + 1 : 3));
-			$(item).attr("value", (name != undefined ? name : ""));
+			$(item).attr("size", (name != '' ? name.length + 1 : 10));
+			$(item).attr("value", name);
 			$(item).attr("readonly", "readonly");
 			$(item).attr("type", "text");
 			$(item).data("focues", false);
 
-			$(item).click(function () {
+			var hammeritem = new Hammer(item, {
+				prevent_default: true,
+				no_mouseevents: true
+			});
+
+			hammeritem.on('tap', function () {
 				if (obj.interrupt || $(item).data("focus"))
 					return;
 				deactivate(this);
@@ -116,7 +121,7 @@
 					settings.onSelect(this);
 			});
 
-			$(item).dblclick(function () {
+			hammeritem.on('doubletap', function () {
 				if (obj.interrupt || $(item).data("focus"))
 					return;
 				deactivate(this);
@@ -206,8 +211,8 @@
 		hammermoveright.on("tap", move_handler);
 
 		var hammermove = new Hammer(obj.menu, {
-			prevent_default: true,
-			no_mouseevents: true
+			prevent_default: false,
+			no_mouseevents: false
 		});
 
 		hammermove.on("dragstart", function (e) { 
