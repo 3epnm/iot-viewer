@@ -107,8 +107,8 @@
 			$(item).data("focues", false);
 
 			var hammeritem = new Hammer(item, {
-				prevent_default: true,
-				no_mouseevents: true
+				prevent_default: false,
+				no_mouseevents: false
 			});
 
 			hammeritem.on('tap', function () {
@@ -167,8 +167,8 @@
 		};
 
 		var hammeradd = new Hammer(obj.add, {
-			prevent_default: true,
-			no_mouseevents: true
+			prevent_default: false,
+			no_mouseevents: false
 		});
 
 		hammeradd.on("tap", function () {
@@ -197,15 +197,15 @@
 		}
 
 		var hammermoveleft = new Hammer($(".left", HTMLdiv)[0], {
-			prevent_default: true,
-			no_mouseevents: true
+			prevent_default: false,
+			no_mouseevents: false
 		});
 
 		hammermoveleft.on("tap", move_handler);
 
 		var hammermoveright = new Hammer($(".right", HTMLdiv)[0], {
-			prevent_default: true,
-			no_mouseevents: true
+			prevent_default: false,
+			no_mouseevents: false
 		});
 
 		hammermoveright.on("tap", move_handler);
