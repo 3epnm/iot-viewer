@@ -1305,6 +1305,17 @@ Licensed under the MIT license.
         function bindEvents() {
             // bind events
             if (options.grid.hoverable) {
+	            var Hammertime = new Hammer(eventHolder[0], {
+	                prevent_default: true,
+	                no_mouseevents: true
+	            });
+	            Hammertime.on("touchmove", function (e) {
+	                onMouseMove(e.touches[0]);
+	            });
+	            Hammertime.on("release", function (e) {
+	                onMouseLeave(e);
+	            });
+            	/*
                 eventHolder.mousemove(onMouseMove);
 
                 // Use bind, rather than .mouseleave, because we officially
@@ -1314,6 +1325,7 @@ Licensed under the MIT license.
                 // .mouseleave when we drop support for 1.2.6.
 
                 eventHolder.bind("mouseleave", onMouseLeave);
+                */
             }
 
             if (options.grid.clickable)

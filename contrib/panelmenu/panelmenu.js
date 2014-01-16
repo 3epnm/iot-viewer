@@ -214,8 +214,10 @@
 			$(this).data('panelmenu').remove_item(item);
 		},
 		update : function (model) {
-			$('#' + model.id).val(model.get('name'));
-			$('#' + model.id).attr("size", model.get('name').length + 1);
+			if (model) {
+				$('#' + model.id).val(model.get('name'));
+				$('#' + model.id).attr("size", model.get('name').length + 1);				
+			}
 			$(this).data('panelmenu').update_panel();
 		},
 		init : function (options) {

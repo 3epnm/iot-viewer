@@ -8,6 +8,14 @@
 	box-sizing: border-box;  	
 }
 
+#flot .legend table {
+	background-color: white;
+}
+
 #flot .legend td {
 	padding: 5px;
+}
+
+#flot .legend td:nth-child(3) {
+	text-align: right;
 }
