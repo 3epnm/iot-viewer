@@ -31,7 +31,7 @@
 	text-align: center;
 	vertical-align: middle;
 }
-#error, #confirm {
+#error, #confirm, #prompt {
 	position: absolute;
 	top: 0px;
 	width: 100%;
@@ -46,12 +46,12 @@
 	transition-duration: 0.2s;
 	-webkit-transition-duration: 0.2s;
 }
-#error, #confirm {
+#error, #confirm, #prompt {
 	height: 200px;
 	transform: translate(0px,-200px);
 	-webkit-transform: translate(0px, -200px);
 }
-.error, .confirm {
+.error, .confirm, .prompt {
 	height: 150px;
 	width: 400px;
 	background-color: white;
@@ -65,7 +65,11 @@
 .confirm {
 	border: solid 1px #55ff55;
 }
-#error.open, #confirm.open {
+.prompt {
+	border: solid 1px #494985;
+	padding: 10px;
+}
+#error.open, #confirm.open, #prompt.open {
 	transform: translate(0px,-5px);
 	-webkit-transform: translate(0px,-5px);
 }

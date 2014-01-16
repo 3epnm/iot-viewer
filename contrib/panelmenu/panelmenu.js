@@ -24,16 +24,16 @@
 
 		var settings = $.extend({
 			onNew : null,
-			onRemove : null,
-			onChange : null,
+			//onRemove : null,
+			//onChange : null,
 			onSelect : null
 
 		}, options || {});
 
 		var width = function () {
-			var width = 25;
+			var width = 26;
 			for (var i=0; i<obj.menu_items.length; i++) {
-				width += $(obj.menu_items[i]).width() + 17;
+				width += $(obj.menu_items[i]).width() + 18;
 			}
 			return width;
 		}
@@ -47,7 +47,7 @@
 			$(obj.menu).css(transformProp, "translateX(" + obj.pos + "px)");
 		}
 
-		var update = function () {
+		this.update_panel = function () {
 			window.setTimeout(function () {
 				$(obj.inner).width(width());
 
@@ -70,100 +70,67 @@
 			$(".active", obj.inner).removeClass("active");
 		}
 
-		var remove_item = function (elem) {
+		this.remove_item = function (elem) {
 			for (var i=0; i<obj.menu_items.length; i++) {
 				if (obj.menu_items[i] == elem) {
 					elem.parentNode.removeChild(elem);
 					obj.menu_items.splice(i,1);
+					obj.update_panel();
 					return;
 				}
 			}
 		}
-
-		var blur = function (elem) {
-			if ($(elem).val() == "") {
-				remove_item(elem);
-				if (typeof(settings.onRemove) == "function")
-					settings.onRemove(elem);
-			} else {
-				$(elem).addClass("center");
-				$(elem).attr("readonly", "readonly");
-				$(elem).data("focus", false);
-
-				if (typeof(settings.onChange) == "function")
-					settings.onChange(elem);	
-			}
-			update();
-		};
-
+		
 		this.add_item = function (name, id) {
-			var item = document.createElement("input");
-			$(item).addClass("item text center");
-			$(item).attr("id", (id ? id : "item_" + obj.menu_items.length));
-			$(item).attr("size", (name != '' ? name.length + 1 : 10));
-			$(item).attr("value", name);
-			$(item).attr("readonly", "readonly");
-			$(item).attr("type", "text");
-			$(item).data("focues", false);
-
-			var hammeritem = new Hammer(item, {
-				prevent_default: false,
-				no_mouseevents: false
-			});
-
-			hammeritem.on('tap', function () {
-				if (obj.interrupt || $(item).data("focus"))
+			var callback = function (name) {
+				if (!name)
 					return;
-				deactivate(this);
 
-				$(this).addClass("active");
-				if (typeof(settings.onSelect) == "function")
-					settings.onSelect(this);
-			});
+				var item = document.createElement("input");
+				$(item).addClass("item text center");
+				$(item).attr("autocomplete","off"); 
+				$(item).attr("autocorrect", "off"); 
+				$(item).attr("autocapitalize", "off")
+				$(item).attr("spellcheck", "false");
+				$(item).attr("id", (id ? id : "item_" + obj.menu_items.length));
+				$(item).attr("size", (name != '' ? name.length + 1 : 10));
+				$(item).attr("value", name);
+				$(item).attr("readonly", "readonly");
+				$(item).attr("type", "text");
 
-			hammeritem.on('doubletap', function () {
-				if (obj.interrupt || $(item).data("focus"))
-					return;
-				deactivate(this);
+				var hammeritem = new Hammer(item, {
+					prevent_default: false,
+					no_mouseevents: false
+				});
 
-				$(item).data("focus", true);
-				$(this).removeClass("center");
-				$(this).removeAttr("readonly");
+				hammeritem.on('tap', function () {
+					if (obj.interrupt || $(item).data("focus"))
+						return;
+					deactivate(this);
 
-				var val = $(this).val();
-				var that = this;
+					$(this).addClass("active");
+					
+					if (typeof(settings.onSelect) == "function")
+						settings.onSelect(this);
+				});
+
+				$(obj.inner).prepend($(item));
+
+				if (typeof(settings.onCreate) == "function")
+					settings.onCreate(item);
 				
-				window.setTimeout(function () { 
-					$(that).val(val); 
-					$(that).focus(); 
-				}, 100);
-			});
+				obj.update_panel();
 
-			$(item).keydown(function(e) {
-				var len = $(this).val().length;
-				if (len > 2) {
-					$(this).attr("size", len + 1);
-				}
-				if(e.which == 13) {
-					$(this).blur();
-				}
-			});
+				obj.menu_items.push(item);
+			}
 
-			$(item).keyup(function(e) {
-				update();
-			});
+			$(obj.add).blur();
 
-			$(item).blur(function () { blur(this); });
-			
-			$(obj.inner).prepend($(item));
-
-			if (typeof(settings.onCreate) == "function")
-				settings.onCreate(item);
-			
-			update();
-
-			obj.menu_items.push(item);
-			return item;
+			if (name == '') {
+				AppView.showPrompt("Please enter a name", "", callback);
+			} else {
+				callback(name);
+			} 
 		};
 
 		var hammeradd = new Hammer(obj.add, {
@@ -175,7 +142,7 @@
 			deactivate(this);
 			var item = obj.add_item('');
 			move(0);
-			$(item).trigger("dblclick");
+			$(item).trigger("tap");
 		});
 
 		var move_handler = function () {
@@ -220,7 +187,7 @@
 			obj.last = 0;
 		});
 
-		hammermove.on("dragend", update);
+		hammermove.on("dragend", obj.update_panel);
 
 		hammermove.on("drag", function (e) {
 			var evt = ["left", "right"];
@@ -235,6 +202,14 @@
 	var methods = {
 		add : function (item, id) {
 			$(this).data('panelmenu').add_item(item, id);
+		},
+		remove : function (item) {
+			$(this).data('panelmenu').remove_item(item);
+		},
+		update : function (model) {
+			$('#' + model.get('menuid')).val(model.get('name'));
+			$('#' + model.get('menuid')).attr("size", model.get('name').length + 1);
+			$(this).data('panelmenu').update_panel();
 		},
 		init : function (options) {
 			var transformProp = false;

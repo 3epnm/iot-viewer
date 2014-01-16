@@ -30,6 +30,7 @@
 
 	<link rel="stylesheet" href="styles/form.css"></link>
 
+	<script src="lib/views/PromptView.js"></script>
 	<script src="lib/views/ConfirmView.js"></script>
 	<script src="lib/views/ErrorView.js"></script>
 	<script src="lib/views/AppView.js"></script>
@@ -37,8 +38,8 @@
 	<script src="lib/views/ProviderOpenSenseInitializeView.js"></script>
 	<script src="lib/views/ProviderThingSpeakInitializeView.js"></script>
 	<script src="lib/views/ProviderXivelyInitializeView.js"></script>
-	<script src="lib/views/DriversAvail.js"></script>
 	<script src="lib/views/DevicesView.js"></script>
+	<script src="lib/views/ProviderView.js"></script>
 
 	<script src="contrib/hammerjs/hammer.min.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
@@ -71,28 +72,36 @@
 		<h5>ThingSpeak Inititalisation</h5>
 		<div class="form-group">
 			<label for="channelid" class="control-label">Channel ID</label>
-			<input type="text" value="<%= channelid %>"  name="channelid" class="channelid form-control input-sm">
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= channelid %>"  name="channelid" class="channelid form-control input-sm">
 		</div>
 		<div class="form-group">
 			<label for="apikey" class="control-label">API Key</label>
-			<input type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
 		</div>
-		<button class="initialize btn btn-default">save</button>
-		<button class="hide delete btn btn-default">delete</button>
 	</script>
 
 	<script type="text/template" id="xively_initialize">
 		<h5>Xively Inititalisation</h5>
 		<div class="form-group">
 			<label for="feedid" class="control-label">Feed ID</label>
-			<input type="text" value="<%= feedid %>"  name="feedid" class="feedid form-control input-sm">
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= feedid %>"  name="feedid" class="feedid form-control input-sm">
 		</div>
 		<div class="form-group">
 			<label for="apikey" class="control-label">API Key</label>
-			<input type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
 		</div>
-		<button class="initialize btn btn-default">save</button>
-		<button class="hide delete btn btn-default">delete</button>
+	</script>
+
+	<script type="text/template" id="opensense_initialize">
+		<h5>OpenSenSe Inititalisation</h5>
+		<div class="form-group">
+			<label for="feedid" class="control-label">Feed ID</label>
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= feedid %>"  name="feedid" class="feedid form-control input-sm">
+		</div>
+		<div class="form-group">
+			<label for="apikey" class="control-label">API Key</label>
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
+		</div>
 	</script>
 
 	<script type="text/template" id="devices_view">
@@ -107,12 +116,14 @@
 					<input name="<%= listItem.id %>_activated" type="checkbox">
 				<% } %>
 				</span>
-				<input type="text" name="<%= listItem.id %>_name" value="<%= listItem.name %>" class="form-control">
+				<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" name="<%= listItem.id %>_name" value="<%= listItem.name %>" class="form-control">
 				<span class="input-group-addon device-addon_current-value"><%= listItem.current_value %></span>
 			</div>
 		</div>
 		<% }); %>
 		<button class="set btn btn-default">save</button>
+		<button class="reload btn btn-default">reload</button>
+		<button class="edit btn btn-default">edit provider</button>
 	</script>
 
 	<script type="text/template" id="appconfig_template">
@@ -139,14 +150,15 @@
 		</div>
 	</script>
 
-	<script type="text/template" id="drivers_avail">
-		<table class="center">
-		<tr>
-			<td>
-				<div class="btn-group"></div>
-			</td>
-		</tr>
-		</table>
+	<script type="text/template" id="provider_template">
+		<h5>Provider Settings</h5>
+		<div class="form-group">
+			<label for="name" class="control-label">Name</label>
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= name %>"  name="name" class="name form-control input-sm">
+		</div>
+		<button class="save btn btn-default">save</button>
+		<button class="delete btn btn-default">delete</button>
+		<button class="cancel btn btn-default">close</button>
 	</script>
 
 	<script type="text/template" id="error_template">
@@ -180,6 +192,15 @@
 		</tr>
 		</table>
 	</script>
+
+	<script type="text/template" id="prompt_template">
+		<h5><%= text %></h5>
+		<div class="form-group">
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= value %>"  name="value" class="value form-control input-sm">
+		</div>	
+		<button class="cancel btn btn-default">cancel</button>
+		<button class="ok btn btn-default">ok</button>
+	</script>
 </head>
 <body>
 <div class="wrapper">
@@ -188,18 +209,18 @@
 		<div class="mainmenu_container menu_container">
 			<div id="panel" class="panelmenu">
 				<div class="ctrl">
-					<button class="icon move left"><span class="glyphicon glyphicon-chevron-left"></span></button>
+					<button class="icon move left"></button>
 				</div>
 				<div class="outer">
 					<div class="items">
 						<div class="inner">
-							<button class="icon add" id="add"><span class="glyphicon glyphicon-plus"></span></button>
+							<button class="icon add"></button>
 						</div>
 					</div>
 				</div>
 				<div class="ctrl">
-					<button class="icon move right"><span class="glyphicon glyphicon-chevron-right"></span></button>
-					<button class="icon settings"><span class="glyphicon glyphicon glyphicon-cog"></span></button>
+					<button class="icon move right"></button>
+					<button class="icon settings"></button>
 				</div>
 			</div>
 			<div id="form" class="form"></div>
@@ -586,6 +607,10 @@
 <div id="confirm" class="form">
 	<div class="confirm"></div>
 </div>
+<div id="prompt" class="form">
+	<div class="prompt"></div>
+</div>
+
 <script src="lib/main.js"></script>
 </body>
 </html>
