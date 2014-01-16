@@ -5,13 +5,17 @@ div.date_range div.date_range_container .handle .heading {
 	top: 5px;
 }
 
-div.date_range div.date_range_container .handle button {
+div.date_range div.date_range_container .handle .btn_grp {
 	position: absolute;
 	font-size: 70%;
 	right: 5px;
 	top: 5px;
 	display: none;
-	line-height: 1.1em;
+	line-height: 1.3em;
+}
+
+div.date_range div.date_range_container .handle .btn_grp button {
+	margin-left: 5px;
 }
 
 div.date_range form {

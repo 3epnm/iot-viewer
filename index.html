@@ -52,15 +52,15 @@
 	<script src="contrib/flot/jquery.flot.selection.js"></script>
 	<script src="contrib/flot/jquery.flot.time.js"></script>
 
-	<script src="lib/plot.js"></script>
+	<script src="lib/views/PlotView.js"></script>
 
 	<link rel="stylesheet" href="styles/styles.css"></link>
 
-	<link rel="stylesheet" href="contrib/drumjs/drum.min.css"></link>
-	<script src="contrib/drumjs/drum.min.js"></script>
+	<link rel="stylesheet" href="contrib/drumjs/drum.css"></link>
+	<script src="contrib/drumjs/drum.js"></script>
 	
 	<link rel="stylesheet" href="styles/menu.css"></link>
-	<script src="lib/menu.js"></script>
+	<script src="lib/views/MenuView.js"></script>
 	
 	<link rel="stylesheet" href="styles/date_range.css"></link>
 	<script src="lib/date_range.js"></script>
@@ -123,7 +123,8 @@
 		<% }); %>
 		<button class="set btn btn-default">save</button>
 		<button class="reload btn btn-default">reload</button>
-		<button class="edit btn btn-default">edit provider</button>
+		<button class="cancel btn btn-default">close</button>
+		<button class="edit btn btn-default">provider</button>
 	</script>
 
 	<script type="text/template" id="appconfig_template">
@@ -159,6 +160,7 @@
 		<button class="save btn btn-default">save</button>
 		<button class="delete btn btn-default">delete</button>
 		<button class="cancel btn btn-default">close</button>
+		<button class="devices btn btn-default">devices</button>
 	</script>
 
 	<script type="text/template" id="error_template">
@@ -196,11 +198,12 @@
 	<script type="text/template" id="prompt_template">
 		<h5><%= text %></h5>
 		<div class="form-group">
-			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= value %>"  name="value" class="value form-control input-sm">
+			<input id="prompt_value" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= value %>"  class="value form-control input-sm">
 		</div>	
 		<button class="cancel btn btn-default">cancel</button>
 		<button class="ok btn btn-default">ok</button>
 	</script>
+
 </head>
 <body>
 <div class="wrapper">
@@ -214,7 +217,7 @@
 				<div class="outer">
 					<div class="items">
 						<div class="inner">
-							<button class="icon add"></button>
+							<button id="add_provider" class="icon add"></button>
 						</div>
 					</div>
 				</div>
@@ -286,7 +289,10 @@
 					</path>
 				</g>
 				</svg>
-				<button>Set</button>
+				<div class="btn_grp">
+					<button class="now">Now</button>
+					<button class="set">Set</button>
+				</div>
 			</div>
 			<div class="date_range_from">
 				<div class="date_range_header date_range_from_header">

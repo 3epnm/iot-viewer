@@ -24,10 +24,8 @@
 
 		var settings = $.extend({
 			onNew : null,
-			//onRemove : null,
-			//onChange : null,
+			onBeforeCreate: null,
 			onSelect : null
-
 		}, options || {});
 
 		var width = function () {
@@ -66,7 +64,7 @@
 			}, 100);
 		}
 
-		var deactivate = function (elem) {
+		this.deactivate = function () {
 			$(".active", obj.inner).removeClass("active");
 		}
 
@@ -80,21 +78,27 @@
 				}
 			}
 		}
-		
+
 		this.add_item = function (name, id) {
-			var callback = function (name) {
+			var callback = function (name, id) {
 				if (!name)
 					return;
 
+				var is_new = false;
+				if (!id) {
+					var id = settings.onBeforeCreate(name);
+					is_new = true;
+				}
+
+				obj.deactivate();
+
 				var item = document.createElement("input");
-				$(item).addClass("item text center");
-				$(item).attr("autocomplete","off"); 
-				$(item).attr("autocorrect", "off"); 
-				$(item).attr("autocapitalize", "off")
-				$(item).attr("spellcheck", "false");
-				$(item).attr("id", (id ? id : "item_" + obj.menu_items.length));
-				$(item).attr("size", (name != '' ? name.length + 1 : 10));
+
+				$(item).attr("id", id);
+				$(item).attr("size", name.length + 1);
 				$(item).attr("value", name);
+
+				$(item).addClass("item text center");
 				$(item).attr("readonly", "readonly");
 				$(item).attr("type", "text");
 
@@ -106,9 +110,9 @@
 				hammeritem.on('tap', function () {
 					if (obj.interrupt || $(item).data("focus"))
 						return;
-					deactivate(this);
-
+					obj.deactivate();
 					$(this).addClass("active");
+					
 					
 					if (typeof(settings.onSelect) == "function")
 						settings.onSelect(this);
@@ -116,33 +120,33 @@
 
 				$(obj.inner).prepend($(item));
 
-				if (typeof(settings.onCreate) == "function")
+				if (is_new && typeof(settings.onCreate) == "function") {
+					$(item).addClass("active");
 					settings.onCreate(item);
+				}
 				
 				obj.update_panel();
 
 				obj.menu_items.push(item);
 			}
 
-			$(obj.add).blur();
-
 			if (name == '') {
 				AppView.showPrompt("Please enter a name", "", callback);
 			} else {
-				callback(name);
+				callback(name, id);
 			} 
 		};
 
 		var hammeradd = new Hammer(obj.add, {
-			prevent_default: false,
-			no_mouseevents: false
+			prevent_default: true,
+			no_mouseevents: true
 		});
 
 		hammeradd.on("tap", function () {
-			deactivate(this);
+			obj.deactivate();
+			$(obj.add).blur();
 			var item = obj.add_item('');
 			move(0);
-			$(item).trigger("tap");
 		});
 
 		var move_handler = function () {
@@ -164,22 +168,22 @@
 		}
 
 		var hammermoveleft = new Hammer($(".left", HTMLdiv)[0], {
-			prevent_default: false,
-			no_mouseevents: false
+			prevent_default: true,
+			no_mouseevents: true
 		});
 
 		hammermoveleft.on("tap", move_handler);
 
 		var hammermoveright = new Hammer($(".right", HTMLdiv)[0], {
-			prevent_default: false,
-			no_mouseevents: false
+			prevent_default: true,
+			no_mouseevents: true
 		});
 
 		hammermoveright.on("tap", move_handler);
 
 		var hammermove = new Hammer(obj.menu, {
-			prevent_default: false,
-			no_mouseevents: false
+			prevent_default: true,
+			no_mouseevents: true
 		});
 
 		hammermove.on("dragstart", function (e) { 
@@ -200,6 +204,9 @@
 	}
 
 	var methods = {
+		deselect : function () {
+			$(this).data('panelmenu').deactivate();
+		},
 		add : function (item, id) {
 			$(this).data('panelmenu').add_item(item, id);
 		},
@@ -207,8 +214,8 @@
 			$(this).data('panelmenu').remove_item(item);
 		},
 		update : function (model) {
-			$('#' + model.get('menuid')).val(model.get('name'));
-			$('#' + model.get('menuid')).attr("size", model.get('name').length + 1);
+			$('#' + model.id).val(model.get('name'));
+			$('#' + model.id).attr("size", model.get('name').length + 1);
 			$(this).data('panelmenu').update_panel();
 		},
 		init : function (options) {

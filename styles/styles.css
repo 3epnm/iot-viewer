@@ -29,12 +29,3 @@ input, button {
 	left: 0px;
 	overflow: hidden;
 }
-
-.icons .genericon {
-	float: left;
-	width: 30px;
-	height: 20px;
-	line-height: 30px;
-	text-align: center;
-	margin: 5px;
-}
