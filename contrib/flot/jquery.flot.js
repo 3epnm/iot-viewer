@@ -1315,7 +1315,7 @@ Licensed under the MIT license.
 	            Hammertime.on("release", function (e) {
 	                onMouseLeave(e);
 	            });
-            	/*
+            	
                 eventHolder.mousemove(onMouseMove);
 
                 // Use bind, rather than .mouseleave, because we officially
@@ -1325,7 +1325,7 @@ Licensed under the MIT license.
                 // .mouseleave when we drop support for 1.2.6.
 
                 eventHolder.bind("mouseleave", onMouseLeave);
-                */
+                
             }
 
             if (options.grid.clickable)

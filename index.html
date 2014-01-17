@@ -6,14 +6,17 @@
 	<title>Internet of Things Viewer</title>
 
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
-
+	<script src="contrib/hammerjs/hammer.min.js"></script>
+	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
+	<script type="text/javascript">
+		Hammer.plugins.fakeMultitouch();
+	</script>
 	<link href="contrib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
 	<script src="contrib/bootstrap/js/bootstrap.min.js"></script>
 
 	<script src="contrib/underscore/underscore.js"></script>
 	<script src="contrib/backbone/backbone.js"></script>
 	<script src="contrib/backbone/backbone.localStorage.js"></script>
-
 	<script src="lib/backbone-overrides.js"></script>
 
 	<script src="lib/om/AppData.js"></script>
@@ -40,9 +43,6 @@
 	<script src="lib/views/ProviderXivelyInitializeView.js"></script>
 	<script src="lib/views/DevicesView.js"></script>
 	<script src="lib/views/ProviderView.js"></script>
-
-	<script src="contrib/hammerjs/hammer.min.js"></script>
-	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
 
 	<link rel="stylesheet" href="styles/flot.css"></link>
 

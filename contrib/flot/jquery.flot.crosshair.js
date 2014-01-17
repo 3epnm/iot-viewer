@@ -124,8 +124,8 @@ The plugin also adds four public methods:
 			if (!plot.getOptions().crosshair.mode)
 				return;
 
-			//eventHolder.mouseout(onMouseOut);
-			//eventHolder.mousemove(onMouseMove);
+			eventHolder.mouseout(onMouseOut);
+			eventHolder.mousemove(onMouseMove);
 			
 			var Hammertime = new Hammer(eventHolder[0], {
 				prevent_default: true,
