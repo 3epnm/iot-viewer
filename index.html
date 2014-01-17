@@ -5,13 +5,22 @@
 
 	<title>Internet of Things Viewer</title>
 
+	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="styles/form.css"></link>
+	<link rel="stylesheet" href="styles/flot.css"></link>
+	<link rel="stylesheet" href="contrib/drumjs/drum.css"></link>
+	<link rel="stylesheet" href="styles/date_range.css"></link>
+	<link rel="stylesheet" href="styles/menu.css"></link>
+	<link rel="stylesheet" href="contrib/panelmenu/panelmenu.css"></link>
+	<link rel="stylesheet" href="styles/styles.css"></link>
+
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
 	<script src="contrib/hammerjs/hammer.min.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
 	<script type="text/javascript">
 		Hammer.plugins.fakeMultitouch();
 	</script>
-	<link href="contrib/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
 	<script src="contrib/bootstrap/js/bootstrap.min.js"></script>
 
 	<script src="contrib/underscore/underscore.js"></script>
@@ -31,8 +40,6 @@
 	<script src="lib/om/Provider.js"></script>
 	<script src="lib/om/ProviderList.js"></script>
 
-	<link rel="stylesheet" href="styles/form.css"></link>
-
 	<script src="lib/views/PromptView.js"></script>
 	<script src="lib/views/ConfirmView.js"></script>
 	<script src="lib/views/ErrorView.js"></script>
@@ -44,8 +51,6 @@
 	<script src="lib/views/DevicesView.js"></script>
 	<script src="lib/views/ProviderView.js"></script>
 
-	<link rel="stylesheet" href="styles/flot.css"></link>
-
 	<script src="contrib/flot/jquery.flot.js"></script>
 	<script src="contrib/flot/jquery.flot.resize.js"></script>
 	<script src="contrib/flot/jquery.flot.crosshair.js"></script>
@@ -53,19 +58,9 @@
 	<script src="contrib/flot/jquery.flot.time.js"></script>
 
 	<script src="lib/views/PlotView.js"></script>
-
-	<link rel="stylesheet" href="styles/styles.css"></link>
-
-	<link rel="stylesheet" href="contrib/drumjs/drum.css"></link>
 	<script src="contrib/drumjs/drum.js"></script>
-	
-	<link rel="stylesheet" href="styles/menu.css"></link>
-	<script src="lib/views/MenuView.js"></script>
-	
-	<link rel="stylesheet" href="styles/date_range.css"></link>
 	<script src="lib/date_range.js"></script>
-
-	<link rel="stylesheet" href="contrib/panelmenu/panelmenu.css"></link>
+	<script src="lib/views/MenuView.js"></script>
 	<script src="contrib/panelmenu/panelmenu.js"></script>
 
 	<script type="text/template" id="thingspeak_initialize">
@@ -203,7 +198,6 @@
 		<button class="cancel btn btn-default">cancel</button>
 		<button class="ok btn btn-default">ok</button>
 	</script>
-
 </head>
 <body>
 <div class="wrapper stopscrollcontent">
