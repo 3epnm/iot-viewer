@@ -44,6 +44,9 @@ div.mainmenu div.mainmenu_container .handle button {
 	line-height: 1em !important;
 }
 
+div.menu .disabled {
+	opacity: 0.5;
+}
 
 div.menu {
 	position: absolute;

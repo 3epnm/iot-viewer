@@ -43,6 +43,26 @@
 				$(obj.menu).removeClass("smooth"); 
 			}, 500);
 			$(obj.menu).css(transformProp, "translateX(" + obj.pos + "px)");
+
+			var iw = $(obj.inner).width();
+			var ow = $(obj.menu).width();
+			if (iw < ow) {
+				$(".left, .right", HTMLdiv).attr("disabled", "disabled");
+				$(".left, .right", HTMLdiv).addClass("disabled");
+			} else if (pos == 0) {
+				$(".left", HTMLdiv).attr("disabled", "disabled");
+				$(".left", HTMLdiv).addClass("disabled");
+				$(".right", HTMLdiv).removeAttr("disabled");
+				$(".right", HTMLdiv).removeClass("disabled");
+			} else if (pos == ow-iw) {
+				$(".right", HTMLdiv).attr("disabled", "disabled");
+				$(".right", HTMLdiv).addClass("disabled");
+				$(".left", HTMLdiv).removeAttr("disabled");
+				$(".left", HTMLdiv).removeClass("disabled");				
+			} else {
+				$(".left, .right", HTMLdiv).removeAttr("disabled");
+				$(".left, .right", HTMLdiv).removeClass("disabled");
+			}
 		}
 
 		this.update_panel = function () {
@@ -79,62 +99,47 @@
 			}
 		}
 
-		this.add_item = function (name, id) {
-			var callback = function (name, id) {
-				if (!name)
-					return;
-
-				var is_new = false;
-				if (!id) {
-					var id = settings.onBeforeCreate(name);
-					is_new = true;
-				}
-
-				obj.deactivate();
-
-				var item = document.createElement("input");
-
-				$(item).attr("id", id);
-				$(item).attr("size", name.length + 1);
-				$(item).attr("value", name);
-
-				$(item).addClass("item text center");
-				$(item).attr("readonly", "readonly");
-				$(item).attr("type", "text");
-
-				var hammeritem = new Hammer(item, {
-					prevent_default: false,
-					no_mouseevents: false
-				});
-
-				hammeritem.on('tap', function () {
-					if (obj.interrupt || $(item).data("focus"))
-						return;
-					obj.deactivate();
-					$(this).addClass("active");
-					
-					
-					if (typeof(settings.onSelect) == "function")
-						settings.onSelect(this);
-				});
-
-				$(obj.inner).prepend($(item));
-
-				if (is_new && typeof(settings.onCreate) == "function") {
-					$(item).addClass("active");
-					settings.onCreate(item);
-				}
-				
-				obj.update_panel();
-
-				obj.menu_items.push(item);
+		this.add_item = function (name, id, is_new) {
+			if (!name || !id) {
+				AppView.showError("Error adding new Provider", "No name or id was given.");
+				return;
 			}
 
-			if (name == '') {
-				AppView.showPrompt("Please enter a name", "", callback);
-			} else {
-				callback(name, id);
-			} 
+			obj.deactivate();
+
+			var item = document.createElement("input");
+
+			$(item).attr("id", id);
+			$(item).attr("size", name.length + 1);
+			$(item).attr("value", name);
+
+			$(item).addClass("item text center");
+			$(item).attr("readonly", "readonly");
+			$(item).attr("type", "text");
+
+			var hammeritem = new Hammer(item, {
+				prevent_default: true,
+				no_mouseevents: true
+			});
+
+			hammeritem.on('tap', function () {
+				if (obj.interrupt || $(item).data("focus"))
+					return;
+				obj.deactivate();
+				$(this).addClass("active");
+
+				if (typeof(settings.onSelect) == "function")
+					settings.onSelect(this);
+			});
+
+			$(obj.inner).prepend($(item));
+			obj.update_panel();
+			obj.menu_items.push(item);
+
+			if (is_new && typeof(settings.onCreate) == "function") {
+				$(item).addClass("active");
+				settings.onCreate(item);
+			}
 		};
 
 		var hammeradd = new Hammer(obj.add, {
@@ -144,9 +149,14 @@
 
 		hammeradd.on("tap", function () {
 			obj.deactivate();
-			$(obj.add).blur();
-			var item = obj.add_item('');
 			move(0);
+
+			$(obj.add).blur();
+			
+			AppView.showPrompt("Please enter a name", "", function (name) {
+				var id = settings.onBeforeCreate(name);
+				obj.add_item(name, id, true)
+			});
 		});
 
 		var move_handler = function () {
@@ -194,6 +204,13 @@
 		hammermove.on("dragend", obj.update_panel);
 
 		hammermove.on("drag", function (e) {
+			var iw = $(obj.inner).width();
+			var ow = $(obj.menu).width();
+
+			if (iw < ow) {
+				return;
+			}
+
 			var evt = ["left", "right"];
 			if (evt.indexOf(e.gesture.direction)>=0) {
 				obj.pos += e.gesture.deltaX - obj.last;
