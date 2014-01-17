@@ -117,7 +117,7 @@
 				<% } %>
 				</span>
 				<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" name="<%= listItem.id %>_name" value="<%= listItem.name %>" class="form-control">
-				<span class="input-group-addon device-addon_current-value"><%= listItem.current_value %></span>
+				<span class="input-group-addon device-addon_current-value"><%= listItem.current_value %><%= listItem.symbol %></span>
 			</div>
 		</div>
 		<% }); %>
