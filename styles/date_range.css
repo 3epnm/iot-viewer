@@ -16,7 +16,7 @@ div.date_range div.date_range_container .handle .btn_grp {
 
 div.date_range div.date_range_container .handle .btn_grp button {
 	margin-left: 5px;
-	height: 1.9em;
+	height: 20px;
 }
 
 div.date_range form {
@@ -143,4 +143,14 @@ div.drum figure {
 	float: right;
 	text-align: right;
 	color: #CE0000;
+}
+
+.date_range .left, .date_range .right {
+	width: 20px;
+	background-size: 55%;
+}
+
+.smooth div.drum {
+	transition-duration: 0.2s;
+	-webkit-transition-duration: 0.2s;			
 }
