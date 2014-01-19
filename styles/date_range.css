@@ -1,3 +1,11 @@
+div.date_range {
+	-webkit-touch-callout:none;
+    -webkit-user-select:none;
+    -moz-user-select:none;
+    -ms-user-select:none;
+    user-select:none;
+}
+
 div.date_range div.date_range_container .handle .heading {
 	position: absolute;
 	font-size: 90%;
@@ -148,9 +156,4 @@ div.drum figure {
 .date_range .left, .date_range .right {
 	width: 20px;
 	background-size: 55%;
-}
-
-.smooth div.drum {
-	transition-duration: 0.2s;
-	-webkit-transition-duration: 0.2s;			
 }
