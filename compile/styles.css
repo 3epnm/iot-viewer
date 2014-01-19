@@ -7762,3 +7762,7 @@ button.right {
 	background-size: 50%;
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAXCAMAAADa6lTVAAAAP1BMVEUAAABwcHBxcXFycnJzc3N5eXl7e3uBgYG0tLS1tbW2tra5ubm6urq7u7vFxcXGxsbHx8fKysrLy8vMzMza2tq8tJKjAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfeARALASXX06M3AAAAJmlUWHRDb21tZW50AAAAAABDcmVhdGVkIHdpdGggR0lNUCBvbiBhIE1hY5XkX1sAAABRSURBVBjTndBJCoAwEETR6jjFIcakvf9ZRWwFC3H6y7cpKOC6LhC0IoHhTF6EqNlEhr/Uf6RkUuwwVwbpEfJrQG2gx/DoCIDoCFYqlW6dFDctD/AC27aqSxsAAAAASUVORK5CYII=);
 }
+
+html.ipad.ios7 > body {
+	-webkit-transform: translate3d(0,0,0);
+}

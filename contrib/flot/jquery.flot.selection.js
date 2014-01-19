@@ -173,6 +173,8 @@ The plugin allso adds the following methods to the plot object:
 
         function triggerSelectedEvent() {
             var r = getSelection();
+            if (!r)
+                return;
 
             plot.getPlaceholder().trigger("plotselected", [ r ]);
 
@@ -300,6 +302,32 @@ The plugin allso adds the following methods to the plot object:
         plot.hooks.bindEvents.push(function(plot, eventHolder) {
             var o = plot.getOptions();
             if (o.selection.mode != null) {
+                
+                var Hammertime = new Hammer(eventHolder[0], {
+                    prevent_default: true,
+                    no_mouseevents: true
+                });
+                Hammertime.on("touchmove", function (e) {
+                    if (e.touches.length == 2) {
+                        setSelectionPos(selection.first, e.touches[0]);
+                        setSelectionPos(selection.second, e.touches[1]);
+                        selection.active = true;
+
+                        if (selectionIsSane()) {
+                            selection.show = true;
+                            plot.triggerRedrawOverlay();
+                        }
+                        else
+                            clearSelection(true);
+
+                        plot.getPlaceholder().trigger("plotselecting", [ getSelection() ]);
+                    }
+                });
+                Hammertime.on("touchend", function (e) {
+                    triggerSelectedEvent();
+                    clearSelection(true);
+                });
+
                 eventHolder.mousemove(onMouseMove);
                 eventHolder.mousedown(onMouseDown);
             }
@@ -340,6 +368,9 @@ The plugin allso adds the following methods to the plot object:
             
             if (mouseUpHandler)
                 $(document).unbind("mouseup", mouseUpHandler);
+
+            Hammer(eventHolder[0]).off("touchmove");
+            Hammer(eventHolder[0]).off("touchend");
         });
 
     }

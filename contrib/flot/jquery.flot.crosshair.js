@@ -134,6 +134,8 @@ The plugin also adds four public methods:
 			Hammertime.on("touchmove", function (e) {
 				if (e.touches.length == 1)
 					onMouseMove(e.touches[0]);
+				else
+					onMouseOut(e);
 			});
 			Hammertime.on("touchend", function (e) {
 				onMouseOut(e);
@@ -174,8 +176,11 @@ The plugin also adds four public methods:
 		});
 
 		plot.hooks.shutdown.push(function (plot, eventHolder) {
-			//eventHolder.unbind("mouseout", onMouseOut);
-			//eventHolder.unbind("mousemove", onMouseMove);
+			eventHolder.unbind("mouseout", onMouseOut);
+			eventHolder.unbind("mousemove", onMouseMove);
+
+            Hammer(eventHolder[0]).off("touchmove");
+            Hammer(eventHolder[0]).off("touchend");
 		});
 	}
 	
