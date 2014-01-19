@@ -2,10 +2,9 @@
 <head>
 	<meta charset='utf-8'>
 	<meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
-
 	<title>Internet of Things Viewer</title>
-
-	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.min.css">
+<!--
+	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.css">
 	<link rel="stylesheet" href="styles/form.css"></link>
 	<link rel="stylesheet" href="styles/flot.css"></link>
 	<link rel="stylesheet" href="contrib/drumjs/drum.css"></link>
@@ -16,10 +15,10 @@
 
 	<script src="contrib/jquery/jquery-1.9.1.js"></script>
 	<script src="contrib/jsonp/jsonp.js"></script>
-	<script src="contrib/hammerjs/hammer.min.js"></script>
+	<script src="contrib/hammerjs/hammer.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
 
-	<script src="contrib/bootstrap/js/bootstrap.min.js"></script>
+	<script src="contrib/bootstrap/js/bootstrap.js"></script>
 
 	<script src="contrib/underscore/underscore.js"></script>
 	<script src="contrib/backbone/backbone.js"></script>
@@ -61,6 +60,10 @@
 	<script src="lib/date_range.js"></script>
 	<script src="lib/views/MenuView.js"></script>
 	<script src="contrib/panelmenu/panelmenu.js"></script>
+	<script src="lib/main.js"></script>
+-->
+	<link href="compile/styles.min.css" rel="stylesheet"></link>
+	<script rel="notcompile" src="compile/script.min.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -626,7 +629,5 @@
 	<button class="cancel btn btn-default">cancel</button>
 	<button class="ok btn btn-default">ok</button>
 </script>
-
-<script src="lib/main.js"></script>
 </body>
 </html>
