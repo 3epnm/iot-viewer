@@ -1,0 +1,10 @@
+CACHE MANIFEST
+# 2014-01-19:v5
+
+CACHE:
+index.html
+compile/styles.min.css
+compile/script.min.js
+
+NETWORK:
+*

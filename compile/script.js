@@ -7,6 +7,12 @@
 
 
 /* **************************************************************************************************** */
+/* lib/appcache.js */
+/* **************************************************************************************************** */
+
+window.addEventListener("load",function(){window.applicationCache.addEventListener("updateready",function(){window.applicationCache.status==window.applicationCache.UPDATEREADY&&(window.applicationCache.swapCache(),AppView.showConfirm("A new version of this site is available. Load it?",function(){window.location.reload()}))},!1)},!1);
+
+/* **************************************************************************************************** */
 /* lib/date.js */
 /* **************************************************************************************************** */
 
