@@ -105,4 +105,5 @@ button.edit, button.devices {
 
 .device-addon_current-value {
 	width: 75px;
+	text-align: right;
 }

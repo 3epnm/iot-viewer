@@ -1305,6 +1305,7 @@ Licensed under the MIT license.
         function bindEvents() {
             // bind events
             if (options.grid.hoverable) {
+
 	            var Hammertime = new Hammer(eventHolder[0], {
 	                prevent_default: true,
 	                no_mouseevents: true
@@ -1315,7 +1316,7 @@ Licensed under the MIT license.
 	            Hammertime.on("release", function (e) {
 	                onMouseLeave(e);
 	            });
-            	
+
                 eventHolder.mousemove(onMouseMove);
 
                 // Use bind, rather than .mouseleave, because we officially

@@ -126,7 +126,7 @@ The plugin also adds four public methods:
 
 			eventHolder.mouseout(onMouseOut);
 			eventHolder.mousemove(onMouseMove);
-			
+
 			var Hammertime = new Hammer(eventHolder[0], {
 				prevent_default: true,
 				no_mouseevents: true
@@ -138,7 +138,6 @@ The plugin also adds four public methods:
 			Hammertime.on("touchend", function (e) {
 				onMouseOut(e);
 			})
-			
 		});
 
 		plot.hooks.drawOverlay.push(function (plot, ctx) {
