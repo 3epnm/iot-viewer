@@ -1,0 +1,19 @@
+{
+	"provider" : {
+		"Open.Sen.Se" : {
+			"classname" : "ProviderOpenSense",
+			"feedids" : "50073, 50074, 50075, 50076, 50077",
+			"sense_key" : "hPPRDU_1T77qRng1BDgJQg"
+		},
+		"ThingSpeak" : {
+			"classname" : "ProviderThingSpeak",
+			"channelid" : "8710",
+			"apikey" : "5GS6G8WA21DQXKED"
+		},
+		"Xively" : {
+			"classname" : "ProviderXively",
+			"feedid" : "1170443106",
+			"apikey" : "a5TgP0CCf8DMNjuSsAeFNApq9EwgZTkPugftcZ38v5nrRFRj"
+		}
+	}	
+}

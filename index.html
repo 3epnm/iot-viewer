@@ -1,4 +1,5 @@
 <html manifest="iotviewer.appcache">
+<html>
 <head>
 	<meta charset='utf-8'>
 	<meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />	
@@ -90,7 +91,7 @@
 				</div>
 			</div>
 			<div id="form" class="form"></div>
-			<div class="handle show_down">
+			<div id="upper_menu_handle" class="handle show_down">
 				<div class="heading">Sensor Feeds</div>
 				<svg class="up" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
 				<g>
@@ -124,7 +125,7 @@
 
 	<div class="menu lower date_range lower_menu_close">
 		<div class="date_range_container outside menu_container">
-			<div class="handle show_up">
+			<div id="lower_menu_handle" class="handle show_up">
 				<div class="heading">Date Time Range</div>
 				<svg class="up" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
 				<g>
@@ -575,6 +576,7 @@
 			 Show lines
 		</label>
 	</div>
+	<button class="demo btn btn-default">Demo Mode</button>
 	<button class="cancel btn btn-default">close</button>
 </script>
 
