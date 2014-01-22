@@ -14,6 +14,14 @@
 	<link rel="apple-touch-icon" sizes="76x76" href="styles/icons/apple-touch-icon-76x76.png">
 	<link rel="apple-touch-icon" sizes="152x152" href="styles/icons/apple-touch-icon-152x152.png">
 
+	<link rel="icon" type="image/png" href="styles/favicon-196x196.png" sizes="196x196">
+	<link rel="icon" type="image/png" href="styles/favicon-160x160.png" sizes="160x160">
+	<link rel="icon" type="image/png" href="styles/favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="styles/favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="styles/favicon-16x16.png" sizes="16x16">
+	<meta name="msapplication-TileColor" content="#da532c">
+	<meta name="msapplication-TileImage" content="styles/mstile-144x144.png">
+
 	<script src="lib/appcache.js"></script>
 	<script src="lib/date.js"></script>
 	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.css">
@@ -73,6 +81,9 @@
 	<script src="lib/views/MenuView.js"></script>
 	<script src="contrib/panelmenu/panelmenu.js"></script>
 	<script src="lib/main.js"></script>
+
+	<link rel="stylesheet" href="styles/tutorial.css"></link>
+	<script src="lib/views/TutorialView.js"></script>
 </head>
 <body>
 <div class="wrapper">
@@ -475,7 +486,13 @@
 		</div>
 	</div>
 </div>
-
+<div id="tutorial" class="tutorial">
+<table>
+<tr>
+	<td><div class="tutorial_template"></div></td>
+</tr>
+</table>
+</div>
 <div id="mask" class="mask">
 	<div class="wait"></div>
 </div>
@@ -488,6 +505,197 @@
 <div id="prompt" class="form">
 	<div class="prompt"></div>
 </div>
+
+<script type="text/template" id="tutorial_template">
+	<h3>Introduction</h3>
+	<div class="inner">
+		<div class="content">
+			<p>If you open the <b>IOT Viewer</b> for the first time, you can start with the tutorial or load demo data.</p>
+			<p>If you no longer want to see this dialog, you can check <i>Don&apos;t show this screen in future</i> and close with cancel.</p>
+		</div>
+		<div class="bottom">
+			<div class="buttons">
+				<div class="pull-left">
+					<button class="start btn btn-default btn-sm">Start Tutorial</button>
+				</div>
+				<div class="pull-right">
+					<button class="cancel btn btn-primary btn-sm">close</button>
+				</div>
+			</div>
+			<div class="check">
+				<div class="pull-right checkbox">
+					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_1">
+	<h3>Introduction - register a new provider</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step t0">
+				<p>In order to register a new provider, the Sensor Feeds Panel opened and clicked on the 
+				plus icon. In the following dialog the name of the new provider is specified.</p>
+			</div>
+			<div class="step t15">
+				<p>In the next view, the type of the provider is set by clicking on the corresponding 
+				button. The dialog is expanded and the providers credentials could specified.</p>
+				<p>Currently, Xively, ThingSpeak and Open.Sen.Se are supported by IOT Viewer.</p>
+				<p>In the next view, the type of the provider is set by clicking on the corresponding 
+				button. The dialog is expanded and the providers credentials could specified.</p>
+				<p>The credentials form may differ depending on the provider.</p>
+			</div>
+			<div class="step t28">
+				<p>If the registration was successful, in the next view a list of available devices will 
+				be shown.</p>
+				<p>You can change the Name of the Devices (which are by default set to the id given by the 
+				provider)</p>
+				<p>You can reload the list at any time to refresh the list of available devices or to 
+				update the value. By Clicking on the provider button, you can change to the last view.</p>
+			</div>
+			<div class="step last t46">
+				<p>If the the box in front of the textfield is checked, the device is added to the 
+				plot.</p>
+				<div class="continue">
+					<button class="next btn btn-default btn-sm">next</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" width="612" height="466" controls>
+			<source src="video/introduction_1.m4v" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="buttons">
+				<button class="cancel btn btn-primary btn-sm">close</button>
+			</div>
+			<div class="check">
+				<div class="checkbox">
+					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_2">
+	<h3>Introduction - change the datetime range of the plot</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step t0">
+				<p>When moving the mouse pointer (or with a touch gesture) on the plot, the current values 
+				are displayed ​​in the legend above the right and the associated datetime at the bottom 
+				right.</p>
+				<p>It can be zoomed into an area by left-click, drag and release with a mouse on the plot. 
+				On a touch device, this is done with a two finger gesture.</p>
+			</div>
+			<div class="step t6">
+				<p>Below the plot is the daterange selector. A from and to date and time values can be 
+				changed by swipe up and down on the rollers.</p>
+				<p>On a non touch device, this could be done by click on above and underneath the currently 
+				selected value of a roller.</p>
+			</div>
+			<div class="step t6">
+				<p>Below the plot is the daterange selector. A from and to date and time values can be 
+				changed by swipe up and down on the rollers.</p>
+				<p>On a non touch device, this could be done by click on above and underneath the currently 
+				selected value of a roller.</p>
+				<p>The selected date time range is set with the set button top right of the panel.</p>
+			</div>
+			<div class="step last t32">
+				<p>Loading the data from the providers server might take a while.</p>
+				<div class="continue">
+					<button class="prev btn btn-default btn-sm">prev</button>
+					<button class="next btn btn-default btn-sm">next</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" width="612" height="466" controls>
+			<source src="video/introduction_2.m4v" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="buttons">
+				<button class="cancel btn btn-primary btn-sm">close</button>
+			</div>
+			<div class="check">
+				<div class="checkbox">
+					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_3">
+	<h3>Introduction - shortcuts for changing the datetime range</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step t0">
+				<p>A click or a tap on the <i>Day</i> button, top right of the daterange selector panel, 
+				changes the datetime range to the current day.</p>
+			</div>
+			<div class="step t6">
+				<p>With clicking or tapping on the arrow buttons, the datetime range is paged in six hour 
+				sections into the past or future.</p>
+			</div>
+			<div class="step last t16">
+				<p>Clicking on the <i>Now</i> button changes the datetime range the the present to six hours 
+				in the past.</p>
+				<div class="continue">
+					<button class="prev btn btn-default btn-sm">prev</button>
+					<button class="next btn btn-default btn-sm">next</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" width="612" height="466" controls>
+			<source src="video/introduction_3.m4v" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="buttons">
+				<button class="cancel btn btn-primary btn-sm">close</button>
+			</div>
+			<div class="check">
+				<div class="checkbox">
+					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_4">
+	<h3>Introduction - change plot options</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step last t0">
+				<p>The gear button on the top right of the sensor feeds panel opens the application 
+				settings form.</p>
+				<p>In this form, the lines and dots on the plot and are switched on or off.</p>
+				<div class="continue">
+					<button class="prev btn btn-default btn-sm">prev</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" controls>
+			<source src="video/introduction_4.m4v" type="video/mp4">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="buttons">
+				<button class="cancel btn btn-primary btn-sm">close</button>
+			</div>
+			<div class="check">
+				<div class="checkbox">
+					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
 
 <script type="text/template" id="drivers_view">
 	<h5>Provider Type</h5>
@@ -579,6 +787,16 @@
 				<input name="show_lines" type="checkbox">
 			<% } %>			
 			 Show lines
+		</label>
+	</div>
+	<div class="checkbox">
+		<label>
+			<% if ( show_tutorial ) { %>
+				<input name="show_tutorial" type="checkbox" checked="checked">
+			<% } else { %>
+				<input name="show_tutorial" type="checkbox">
+			<% } %>			
+			 Show Tutorial
 		</label>
 	</div>
 	<button class="cancel btn btn-default">close</button>

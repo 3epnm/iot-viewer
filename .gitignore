@@ -12,4 +12,6 @@ Icon
 .Trashes
 bak
 compile/compile
-
+protected
+demo.json
+private.json

@@ -17,6 +17,8 @@ div.mainmenu div.mainmenu_container {
 	-moz-box-shadow:    0px 1px 5px 1px rgba(150, 150, 150, 0.33);
 	box-shadow:         0px 1px 5px 1px rgba(150, 150, 150, 0.33);
 
+	transition: height 0.3s ease-in-out;
+	-moz-transition: height 0.3s ease-in-out;
 	-webkit-transition: height 0.3s ease-in-out;
 }
 
