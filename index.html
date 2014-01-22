@@ -17,6 +17,8 @@
 	<script src="lib/appcache.js"></script>
 	<script src="lib/date.js"></script>
 	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="contrib/bootstrap-switch/bootstrap-switch.css">
+
 	<link rel="stylesheet" href="styles/form.css"></link>
 	<link rel="stylesheet" href="styles/flot.css"></link>
 	<link rel="stylesheet" href="contrib/drumjs/drum.css"></link>
@@ -30,6 +32,7 @@
 	<script src="contrib/hammerjs/hammer.js"></script>
 	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
 	<script src="contrib/bootstrap/js/bootstrap.js"></script>
+	<script src="contrib/bootstrap-switch/bootstrap-switch.js"></script>
 
 	<script src="contrib/underscore/underscore.js"></script>
 	<script src="contrib/backbone/backbone.js"></script>
@@ -561,26 +564,25 @@
 
 <script type="text/template" id="appconfig_template">
 	<h5>Application Settings</h5>
-	<div class="checkbox">
-		<label>
-			<% if ( show_points ) { %>
-				<input name="show_points" type="checkbox" checked="checked">
-			<% } else { %>
-				<input name="show_points" type="checkbox">
-			<% } %>			
-			 Show points
-		</label>
+	<br/>
+	<div class="form-group">
+		<% if ( show_points ) { %>
+			<input name="show_points" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_points" type="checkbox">
+		<% } %>
+		Show points
 	</div>
-	<div class="checkbox">
-		<label>
-			<% if ( show_lines ) { %>
-				<input name="show_lines" type="checkbox" checked="checked">
-			<% } else { %>
-				<input name="show_lines" type="checkbox">
-			<% } %>			
-			 Show lines
-		</label>
+	<div class="form-group">
+		<% if ( show_lines ) { %>
+			<input name="show_lines" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_lines" type="checkbox">
+		<% } %>
+		Show lines
 	</div>
+	<br/>
+	<button class="save btn btn-default">save</button>
 	<button class="cancel btn btn-default">close</button>
 </script>
 
