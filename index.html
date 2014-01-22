@@ -564,26 +564,26 @@
 
 <script type="text/template" id="appconfig_template">
 	<h5>Application Settings</h5>
-	<br/>
-	<div class="form-group">
+	<div class="form-group form-group-switch">
+		<p>Show points</p>
 		<% if ( show_points ) { %>
 			<input name="show_points" type="checkbox" checked="checked">
 		<% } else { %>
 			<input name="show_points" type="checkbox">
 		<% } %>
-		Show points
 	</div>
-	<div class="form-group">
+	<div class="form-group form-group-switch">
+		<p>Show lines</p>
 		<% if ( show_lines ) { %>
 			<input name="show_lines" type="checkbox" checked="checked">
 		<% } else { %>
 			<input name="show_lines" type="checkbox">
 		<% } %>
-		Show lines
 	</div>
-	<br/>
-	<button class="save btn btn-default">save</button>
-	<button class="cancel btn btn-default">close</button>
+	<div class="form-buttons">
+		<button class="save btn btn-default">save</button>
+		<button class="cancel btn btn-default">close</button>
+	</div>
 </script>
 
 <script type="text/template" id="provider_template">

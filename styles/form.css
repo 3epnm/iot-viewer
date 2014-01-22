@@ -108,6 +108,15 @@ button.edit, button.devices {
 	text-align: right;
 }
 
+.form-group-switch {
+	width: 140px;
+	float: left;
+}
+.form-buttons {
+	margin-top: 5px;
+	clear: both;
+	float: left;
+}
 .has-switch {
 	height: 28px;
 }
