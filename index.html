@@ -14,13 +14,11 @@
 	<link rel="apple-touch-icon" sizes="76x76" href="styles/icons/apple-touch-icon-76x76.png">
 	<link rel="apple-touch-icon" sizes="152x152" href="styles/icons/apple-touch-icon-152x152.png">
 
-	<link rel="icon" type="image/png" href="styles/favicon-196x196.png" sizes="196x196">
-	<link rel="icon" type="image/png" href="styles/favicon-160x160.png" sizes="160x160">
-	<link rel="icon" type="image/png" href="styles/favicon-96x96.png" sizes="96x96">
-	<link rel="icon" type="image/png" href="styles/favicon-32x32.png" sizes="32x32">
-	<link rel="icon" type="image/png" href="styles/favicon-16x16.png" sizes="16x16">
-	<meta name="msapplication-TileColor" content="#da532c">
-	<meta name="msapplication-TileImage" content="styles/mstile-144x144.png">
+	<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196">
+	<link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+	<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
 
 	<link rel="stylesheet" href="compile/demo.min.css"></link>
 	<script src="compile/demo.min.js"></script>	
@@ -451,7 +449,6 @@
 	<div class="inner">
 		<div class="content">
 			<p>If you open the <b>IOT Viewer</b> for the first time, you can start with the tutorial or load demo data.</p>
-			<p>If you no longer want to see this dialog, you can check <i>Don&apos;t show this screen in future</i> and close with cancel.</p>
 		</div>
 		<div class="bottom">
 			<div class="buttons">
@@ -465,7 +462,10 @@
 			</div>
 			<div class="check">
 				<div class="pull-right checkbox">
-					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
+					<label>
+						<input class="set" name="hide_tutorial" type="checkbox">
+						<span>Hide introduction at startup</span>
+					</label>
 				</div>
 			</div>
 		</div>
@@ -509,14 +509,13 @@
 			Your browser does not support the video tag.
 		</video>
 		<div class="bottom">
-			<div class="buttons">
-				<button class="cancel btn btn-primary btn-sm">close</button>
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
 			</div>
-			<div class="check">
-				<div class="checkbox">
-					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
-				</div>
-			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
 		</div>
 	</div>
 </script>
@@ -558,14 +557,13 @@
 			Your browser does not support the video tag.
 		</video>
 		<div class="bottom">
-			<div class="buttons">
-				<button class="cancel btn btn-primary btn-sm">close</button>
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
 			</div>
-			<div class="check">
-				<div class="checkbox">
-					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
-				</div>
-			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
 		</div>
 	</div>
 </script>
@@ -596,14 +594,13 @@
 			Your browser does not support the video tag.
 		</video>
 		<div class="bottom">
-			<div class="buttons">
-				<button class="cancel btn btn-primary btn-sm">close</button>
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
 			</div>
-			<div class="check">
-				<div class="checkbox">
-					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
-				</div>
-			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
 		</div>
 	</div>
 </script>
@@ -628,14 +625,13 @@
 			Your browser does not support the video tag.
 		</video>
 		<div class="bottom">
-			<div class="buttons">
-				<button class="cancel btn btn-primary btn-sm">close</button>
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
 			</div>
-			<div class="check">
-				<div class="checkbox">
-					<label><input class="set" name="hide_tutorial" type="checkbox"><span>Don&apos;t show this screen in future</span></label>
-				</div>
-			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
 		</div>
 	</div>
 </script>
@@ -712,37 +708,34 @@
 
 <script type="text/template" id="appconfig_template">
 	<h5>Application Settings</h5>
-	<div class="checkbox">
-		<label>
-			<% if ( show_points ) { %>
-				<input name="show_points" type="checkbox" checked="checked">
-			<% } else { %>
-				<input name="show_points" type="checkbox">
-			<% } %>			
-			 Show points
-		</label>
+	<div class="form-group form-group-switch ">
+		<p>Show points</p>
+		<% if ( show_points ) { %>
+			<input name="show_points" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_points" type="checkbox">
+		<% } %>
 	</div>
-	<div class="checkbox">
-		<label>
-			<% if ( show_lines ) { %>
-				<input name="show_lines" type="checkbox" checked="checked">
-			<% } else { %>
-				<input name="show_lines" type="checkbox">
-			<% } %>			
-			 Show lines
-		</label>
+	<div class="form-group form-group-switch ">
+		<p>Show lines</p>
+		<% if ( show_lines ) { %>
+			<input name="show_lines" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_lines" type="checkbox">
+		<% } %>
 	</div>
-	<div class="checkbox">
-		<label>
-			<% if ( show_tutorial ) { %>
-				<input name="show_tutorial" type="checkbox" checked="checked">
-			<% } else { %>
-				<input name="show_tutorial" type="checkbox">
-			<% } %>			
-			 Show Tutorial
-		</label>
+	<div class="form-group form-group-switch ">
+		<p>Show tutorial</p>
+		<% if ( show_tutorial ) { %>
+			<input name="show_tutorial" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_tutorial" type="checkbox">
+		<% } %>
 	</div>
-	<button class="cancel btn btn-default">close</button>
+	<div class="form-buttons">
+		<button class="save btn btn-default">save</button>
+		<button class="cancel btn btn-default">close</button>
+	</div>
 </script>
 
 <script type="text/template" id="provider_template">

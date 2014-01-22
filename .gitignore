@@ -11,7 +11,7 @@ Icon
 .Spotlight-V100
 .Trashes
 bak
-compile/compile
+compile/compile/*
 protected
 demo.json
 private.json

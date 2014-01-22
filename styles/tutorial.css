@@ -28,9 +28,14 @@
 }
 
 #tutorial .bottom {
-	width: 100%;
 	position: absolute;
 	bottom: 0px;
+	right: 0px;
+	width: 100%;
+}
+
+#tutorial .tutorial_template_introduction .bottom {
+	width: auto;
 }
 
 #tutorial .clearp {
@@ -47,11 +52,19 @@
 	line-height: 20px;
 	margin-top: 5px;
 	margin-bottom: 0px;	
-	margin-right: 5px;
+}
+
+#tutorial .tutorial_template_introduction .checkbox {
+	float: left;
+	margin-right: 10px;
 }
 
 #tutorial .checkbox input {
-	margin: 4px 5px 0;	
+	margin: 3px 5px 0;
+}
+
+.ios7 #tutorial .checkbox input {
+	margin: 2px 5px 0;	
 }
 
 #tutorial .start, #tutorial .prev {
@@ -84,9 +97,8 @@
 	-webkit-transition: 1s ease-in-out;
 }
 
-#tutorial .start_introduction .inner {
-	transition: 1s ease-in-out;
-	-webkit-transition: 1s ease-in-out;
+#tutorial .start_introduction .bottom {
+	display: none;
 }
 
 #tutorial .check {
@@ -140,8 +152,8 @@
 	background-image: none;
 }
 
-.tutorial_template_introduction  .buttons {
-	float: right;
+.tutorial_template_introduction .bottom {
+	text-align: right;
 }
 
 @media screen and (orientation: portrait) {
@@ -163,11 +175,7 @@
 	#tutorial #video {
 		margin: 0 auto;
 	}
-	.tutorial_template_introduction .bottom {
-		width: 620px;
-	}
 }
-
 @media screen and (orientation: landscape) {
     #tutorial .tutorial_template_introduction {
     	width: 865px;
@@ -186,9 +194,6 @@
 	}
 	#tutorial #video {
 		margin-left: 5px;
-	}
-	.tutorial_template_introduction .bottom {
-		width: 835px;
 	}
 	#tutorial .content .step {
 		width: 205px;

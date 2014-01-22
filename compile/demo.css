@@ -7123,7 +7123,191 @@ td.visible-print {
   td.hidden-print {
     display: none !important;
   }
-}#form {
+}/* ========================================================================
+ * bootstrap-switch - v2.0.1
+ * http://www.bootstrap-switch.org
+ * ========================================================================
+ * Copyright 2012-2013 Mattia Larentis
+ *
+ * ========================================================================
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================================
+ */
+
+.has-switch {
+  display: inline-block;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 1px solid;
+  border-color: #cccccc;
+  position: relative;
+  text-align: left;
+  overflow: hidden;
+  line-height: 8px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  vertical-align: middle;
+  min-width: 100px;
+  -webkit-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+  transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+}
+.has-switch:focus {
+  border-color: #66afe9;
+  outline: 0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+.has-switch.switch-mini {
+  min-width: 72px;
+}
+.has-switch.switch-mini span,
+.has-switch.switch-mini label {
+  padding-bottom: 4px;
+  padding-top: 4px;
+  font-size: 10px;
+  line-height: 9px;
+}
+.has-switch.switch-mini i.switch-mini-icons {
+  height: 1.20em;
+  line-height: 9px;
+  vertical-align: text-top;
+  text-align: center;
+  transform: scale(0.6);
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+.has-switch.switch-small {
+  min-width: 80px;
+}
+.has-switch.switch-small span,
+.has-switch.switch-small label {
+  padding-bottom: 3px;
+  padding-top: 3px;
+  font-size: 12px;
+  line-height: 18px;
+}
+.has-switch.switch-large {
+  min-width: 120px;
+}
+.has-switch.switch-large span,
+.has-switch.switch-large label {
+  padding-bottom: 9px;
+  padding-top: 9px;
+  font-size: 16px;
+  line-height: normal;
+}
+.has-switch.switch-animate > div {
+  -webkit-transition: left 0.5s;
+  transition: left 0.5s;
+}
+.has-switch.switch-off > div {
+  left: -50%;
+}
+.has-switch.switch-on > div {
+  left: 0%;
+}
+.has-switch.disabled {
+  opacity: 0.5;
+  filter: alpha(opacity=50);
+  cursor: default !important;
+}
+.has-switch.disabled span,
+.has-switch.disabled label {
+  cursor: default !important;
+}
+.has-switch > div {
+  display: inline-block;
+  width: 150%;
+  position: relative;
+  top: 0;
+  -webkit-transform: translate3d(0, 0, 0);
+  transform: translate3d(0, 0, 0);
+}
+.has-switch input[type=radio],
+.has-switch input[type=checkbox] {
+  display: none;
+}
+.has-switch span,
+.has-switch label {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  cursor: pointer;
+  position: relative;
+  display: inline-block !important;
+  height: 100%;
+  padding-bottom: 4px;
+  padding-top: 4px;
+  font-size: 14px;
+  line-height: 20px;
+}
+.has-switch label {
+  text-align: center;
+  margin-top: -1px;
+  margin-bottom: -1px;
+  z-index: 100;
+  width: 33.333333333%;
+  background: #ffffff;
+}
+.has-switch label i {
+  color: #000;
+  text-shadow: 0 1px 0 #fff;
+  line-height: 18px;
+  pointer-events: none;
+}
+.has-switch span {
+  text-align: center;
+  z-index: 1;
+  width: 33.333333333%;
+}
+.has-switch span.switch-left {
+  color: #f00;
+  border-bottom-left-radius: 4px;
+  border-top-left-radius: 4px;
+}
+.has-switch span.switch-right {
+  color: #000;
+  background: #eeeeee;
+}
+.has-switch span.switch-primary,
+.has-switch span.switch-left {
+  color: #fff;
+  background: #428bca;
+}
+.has-switch span.switch-info {
+  color: #fff;
+  background: #5bc0de;
+}
+.has-switch span.switch-success {
+  color: #fff;
+  background: #5cb85c;
+}
+.has-switch span.switch-warning {
+  background: #f0ad4e;
+  color: #fff;
+}
+.has-switch span.switch-danger {
+  color: #fff;
+  background: #d9534f;
+}
+.has-switch span.switch-default {
+  color: #000;
+  background: #eeeeee;
+}
+#form {
 	clear: both;
 	width: 100%;
 	padding-top: 10px;
@@ -7231,6 +7415,37 @@ button.edit, button.devices {
 .device-addon_current-value {
 	width: 75px;
 	text-align: right;
+}
+
+.form-group-switch {
+	width: 140px;
+	float: left;
+}
+.form-buttons {
+	margin-top: 5px;
+	clear: both;
+	float: left;
+}
+.has-switch {
+	height: 28px;
+}
+
+.has-switch label {
+	-webkit-border-radius: 4px;
+	border-radius: 4px;
+	background-clip: padding-box;
+}
+.has-switch .switch-left {
+	-webkit-border-top-left-radius: 4px;
+	border-top-left-radius: 4px;
+	-webkit-border-bottom-left-radius: 4px;
+	border-bottom-left-radius: 4px;
+}
+.has-switch .switch-right {
+	-webkit-border-top-right-radius: 4px;
+	border-top-right-radius: 4px;
+	-webkit-border-bottom-right-radius: 4px;
+	border-bottom-right-radius: 4px;
 }#flot {
 	width: 100%;
 	height: 100%;
@@ -7765,7 +7980,7 @@ button.right {
 	background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAXCAMAAADa6lTVAAAAP1BMVEUAAABwcHBxcXFycnJzc3N5eXl7e3uBgYG0tLS1tbW2tra5ubm6urq7u7vFxcXGxsbHx8fKysrLy8vMzMza2tq8tJKjAAAAAXRSTlMAQObYZgAAAAFiS0dEAIgFHUgAAAAJcEhZcwAACxMAAAsTAQCanBgAAAAHdElNRQfeARALASXX06M3AAAAJmlUWHRDb21tZW50AAAAAABDcmVhdGVkIHdpdGggR0lNUCBvbiBhIE1hY5XkX1sAAABRSURBVBjTndBJCoAwEETR6jjFIcakvf9ZRWwFC3H6y7cpKOC6LhC0IoHhTF6EqNlEhr/Uf6RkUuwwVwbpEfJrQG2gx/DoCIDoCFYqlW6dFDctD/AC27aqSxsAAAAASUVORK5CYII=);
 }
 
-html.ipad.ios7 > body {
+html.ipad.ios7 > body, .wrapper {
 	-webkit-transform: translate3d(0,0,0);
 }
 #tutorial {
@@ -7798,9 +8013,14 @@ html.ipad.ios7 > body {
 }
 
 #tutorial .bottom {
-	width: 100%;
 	position: absolute;
 	bottom: 0px;
+	right: 0px;
+	width: 100%;
+}
+
+#tutorial .tutorial_template_introduction .bottom {
+	width: auto;
 }
 
 #tutorial .clearp {
@@ -7817,11 +8037,19 @@ html.ipad.ios7 > body {
 	line-height: 20px;
 	margin-top: 5px;
 	margin-bottom: 0px;	
-	margin-right: 5px;
+}
+
+#tutorial .tutorial_template_introduction .checkbox {
+	float: left;
+	margin-right: 10px;
 }
 
 #tutorial .checkbox input {
-	margin: 4px 5px 0;	
+	margin: 3px 5px 0;
+}
+
+.ios7 #tutorial .checkbox input {
+	margin: 2px 5px 0;	
 }
 
 #tutorial .start, #tutorial .prev {
@@ -7854,9 +8082,8 @@ html.ipad.ios7 > body {
 	-webkit-transition: 1s ease-in-out;
 }
 
-#tutorial .start_introduction .inner {
-	transition: 1s ease-in-out;
-	-webkit-transition: 1s ease-in-out;
+#tutorial .start_introduction .bottom {
+	display: none;
 }
 
 #tutorial .check {
@@ -7910,8 +8137,8 @@ html.ipad.ios7 > body {
 	background-image: none;
 }
 
-.tutorial_template_introduction  .buttons {
-	float: right;
+.tutorial_template_introduction .bottom {
+	text-align: right;
 }
 
 @media screen and (orientation: portrait) {
@@ -7933,11 +8160,7 @@ html.ipad.ios7 > body {
 	#tutorial #video {
 		margin: 0 auto;
 	}
-	.tutorial_template_introduction .bottom {
-		width: 620px;
-	}
 }
-
 @media screen and (orientation: landscape) {
     #tutorial .tutorial_template_introduction {
     	width: 865px;
@@ -7956,9 +8179,6 @@ html.ipad.ios7 > body {
 	}
 	#tutorial #video {
 		margin-left: 5px;
-	}
-	.tutorial_template_introduction .bottom {
-		width: 835px;
 	}
 	#tutorial .content .step {
 		width: 205px;
