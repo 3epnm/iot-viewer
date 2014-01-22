@@ -2,15 +2,15 @@
 
 cat header.js > demo.js
 
-for OUTPUT in $(/usr/bin/perl -lne '/<script src=\"(.*)\"/ and print "$1"' ../index.html)
+for OUTPUT in $(/usr/bin/perl -lne '/<script src=\"(.*)\"/ and print "$1"' compile.html)
 do
 	echo $OUTPUT
 	minify "../${OUTPUT}" "compile/${OUTPUT##*/}"
 	echo "" >> demo.js
 	echo "" >> demo.js
-	echo "/* **************************************************************************************************** */" >> script.js
+	echo "/* **************************************************************************************************** */" >> demo.js
 	echo "/* ${OUTPUT} */" >> demo.js
-	echo "/* **************************************************************************************************** */" >> script.js
+	echo "/* **************************************************************************************************** */" >> demo.js
 	echo "" >> demo.js
 	cat "compile/${OUTPUT##*/}" >> demo.js
 done
@@ -30,7 +30,7 @@ cat demo.compile.js >> demo.min.js
 
 cat header.css > demo.css
 
-for OUTPUT in $(/usr/bin/perl -lne '/<link rel=\"stylesheet\" href=\"(.*)\"/ and print "$1"' ../index.html)
+for OUTPUT in $(/usr/bin/perl -lne '/<link rel=\"stylesheet\" href=\"(.*)\"/ and print "$1"' compile.html)
 do
 	echo $OUTPUT
 	cat "../${OUTPUT}" >> demo.css
