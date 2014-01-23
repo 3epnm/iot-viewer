@@ -7376,6 +7376,9 @@ button.edit, button.devices {
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
+.error > div, .confirm > div, .prompt > div {
+	height: 100%;
+}
 .confirm {
 	border: solid 1px #55ff55;
 }
