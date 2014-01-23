@@ -7376,6 +7376,9 @@ button.edit, button.devices {
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
+.error > div, .confirm > div, .prompt > div {
+	height: 100%;
+}
 .confirm {
 	border: solid 1px #55ff55;
 }
@@ -7676,6 +7679,10 @@ div.date_range div.date_range_container .lines div {
 	line-height: 20px;
 }
 
+.msie div.date_range div.date_range_container .lines {
+	display: none;
+}
+
 div.drum figure {
 	font-weight: 200;
 	text-align: left;
@@ -7688,13 +7695,17 @@ div.drum figure {
 	width: 30px;
 }
 
-#drum_from_date .dial div, #drum_to_date .dial div,
 #drum_from_hours .dial div, #drum_to_hours .dial div, 
 #drum_from_minutes .dial div, #drum_to_minutes .dial div {
 	margin: 0px !important;
 	position: absolute;
 	left: 8px;
 }
+
+#drum_from_date .dial div, #drum_to_date .dial div {
+	left: 5px;
+}
+
 
 #drum_from_date .down div, #drum_to_date .down div,
 #drum_from_hours .down div, #drum_to_hours .down div, 
@@ -7739,6 +7750,36 @@ div.drum figure {
 	width: 20px;
 	background-size: 55%;
 }
+
+.date_range select {
+	float: left;
+	padding: 5px 5px !important;
+	margin-top: 33px;
+}
+.date_range #from_date, .date_range #to_date {
+	width: 50px;
+}
+.date_range #from_month, .date_range #to_month {
+	width: 95px;
+	margin-left: 5px;
+}
+.date_range #from_fullYear, .date_range #to_fullYear {
+	width: 65px;
+	margin-left: 5px;
+}
+.date_range #from_hours, .date_range #to_hours,
+.date_range #from_minutes, .date_range #to_minutes {
+	margin-top: 10px;
+	width: 65px;
+	margin-left: 5px;
+}
+.date_range #from_hours, .date_range #to_hours {
+	margin-left: 0px;
+}
+
+
+
+
 div.mainmenu div.mainmenu_container {
 	position: relative;
 	display: inline-block;
