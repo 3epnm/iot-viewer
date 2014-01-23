@@ -12,6 +12,11 @@
 	<link rel="apple-touch-icon" sizes="120x120" href="styles/apple-touch-icon-120x120.png">
 	<link rel="apple-touch-icon" sizes="76x76" href="styles/apple-touch-icon-76x76.png">
 	<link rel="apple-touch-icon" sizes="152x152" href="styles/apple-touch-icon-152x152.png">
+	<link rel="icon" type="image/png" href="favicon-196x196.png" sizes="196x196">
+	<link rel="icon" type="image/png" href="favicon-160x160.png" sizes="160x160">
+	<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
+	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
+	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
 	<link rel="stylesheet" href="lib/styles.min.css" ></link>
 	<script rel="notcompile" src="lib/script.min.js"></script>
 </head>
@@ -502,27 +507,26 @@
 
 <script type="text/template" id="appconfig_template">
 	<h5>Application Settings</h5>
-	<div class="checkbox">
-		<label>
-			<% if ( show_points ) { %>
-				<input name="show_points" type="checkbox" checked="checked">
-			<% } else { %>
-				<input name="show_points" type="checkbox">
-			<% } %>			
-			 Show points
-		</label>
+	<div class="form-group form-group-switch">
+		<p>Show points</p>
+		<% if ( show_points ) { %>
+			<input name="show_points" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_points" type="checkbox">
+		<% } %>
 	</div>
-	<div class="checkbox">
-		<label>
-			<% if ( show_lines ) { %>
-				<input name="show_lines" type="checkbox" checked="checked">
-			<% } else { %>
-				<input name="show_lines" type="checkbox">
-			<% } %>			
-			 Show lines
-		</label>
+	<div class="form-group form-group-switch">
+		<p>Show lines</p>
+		<% if ( show_lines ) { %>
+			<input name="show_lines" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_lines" type="checkbox">
+		<% } %>
 	</div>
-	<button class="cancel btn btn-default">close</button>
+	<div class="form-buttons">
+		<button class="save btn btn-default">save</button>
+		<button class="cancel btn btn-default">close</button>
+	</div>
 </script>
 
 <script type="text/template" id="provider_template">
