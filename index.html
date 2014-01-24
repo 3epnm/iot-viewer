@@ -581,8 +581,24 @@
 			<input name="show_lines" type="checkbox">
 		<% } %>
 	</div>
+	<div class="form-group form-group-switch">
+		<p>Pan</p>
+		<% if ( pan ) { %>
+			<input name="panzoom" value="pan" type="radio" checked="checked">
+		<% } else { %>
+			<input name="panzoom" value="pan" type="radio">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch">
+		<p>Zoom</p>
+		<% if ( zoom ) { %>
+			<input name="panzoom" value="zoom" type="radio" checked="checked">
+		<% } else { %>
+			<input name="panzoom" value="zoom" type="radio">
+		<% } %>
+	</div>
 	<div class="form-buttons">
-		<button class="save btn btn-default">save</button>
+		<button class="save btn btn-default">Update Plot</button>
 		<button class="cancel btn btn-default">close</button>
 	</div>
 </script>
