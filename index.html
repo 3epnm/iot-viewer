@@ -15,6 +15,10 @@
 	<link rel="apple-touch-icon" sizes="76x76" href="styles/icons/apple-touch-icon-76x76.png">
 	<link rel="apple-touch-icon" sizes="152x152" href="styles/icons/apple-touch-icon-152x152.png">
 
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="contrib/FlashCanvasPro/bin/flashcanvas.js"></script>
+	<![endif]-->
+
 	<script src="lib/appcache.js"></script>
 	<script src="lib/date.js"></script>
 	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.css">
@@ -69,6 +73,7 @@
 	<script src="contrib/flot/jquery.flot.resize.js"></script>
 	<script src="contrib/flot/jquery.flot.crosshair.js"></script>
 	<script src="contrib/flot/jquery.flot.selection.js"></script>
+	<script src="contrib/flot/jquery.flot.navigate.js"></script>
 	<script src="contrib/flot/jquery.flot.time.js"></script>
 
 	<script src="lib/views/PlotView.js"></script>
@@ -582,6 +587,14 @@
 		<% } %>
 	</div>
 	<div class="form-group form-group-switch">
+		<p>Cursor</p>
+		<% if ( cursor ) { %>
+			<input name="cursor" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="cursor" type="checkbox">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch" style="clear: both;">
 		<p>Pan</p>
 		<% if ( pan ) { %>
 			<input name="panzoom" value="pan" type="radio" checked="checked">
