@@ -78,7 +78,6 @@
 
 	<script src="lib/views/PlotView.js"></script>
 	<script src="contrib/drumjs/drum.js"></script>
-	<script src="lib/DateRange.js"></script>
 	<script src="lib/views/MenuView.js"></script>
 	<script src="contrib/panelmenu/panelmenu.js"></script>
 	<script src="lib/main.js"></script>
@@ -136,8 +135,11 @@
 			</div>
 		</div>
 	</div>
+	
+	<div class="plotfrom"></div>
+	<div class="plotto"></div>	
 
-	<div class="menu lower date_range lower_menu_close">
+	<div class="menu lower date_range lower_menu_close">	
 		<div class="date_range_container outside menu_container">
 			<div id="lower_menu_handle" class="handle show_up">
 				<div class="heading">Date Time Range</div>
@@ -611,7 +613,6 @@
 		<% } %>
 	</div>
 	<div class="form-buttons">
-		<button class="save btn btn-default">Update Plot</button>
 		<button class="cancel btn btn-default">close</button>
 	</div>
 </script>
