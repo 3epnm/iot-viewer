@@ -15,12 +15,10 @@
 	<link rel="apple-touch-icon" sizes="76x76" href="styles/icons/apple-touch-icon-76x76.png">
 	<link rel="apple-touch-icon" sizes="152x152" href="styles/icons/apple-touch-icon-152x152.png">
 
-	<!--[if lt IE 9]>
-	<script type="text/javascript" src="contrib/FlashCanvasPro/bin/flashcanvas.js"></script>
-	<![endif]-->
-
 	<script src="lib/appcache.js"></script>
 	<script src="lib/date.js"></script>
+	<script src="lib/array.js"></script>
+	<script src="lib/string.js"></script>
 	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.css">
 	<link rel="stylesheet" href="contrib/bootstrap-switch/bootstrap-switch.css">
 
@@ -52,6 +50,7 @@
 	<script src="lib/om/ProviderThingSpeak.js"></script>
 	<script src="lib/om/ProviderXively.js"></script>
 	<script src="lib/om/ProviderDriverList.js"></script>
+	<script src="lib/om/DeviceData.js"></script>
 	<script src="lib/om/Device.js"></script>
 	<script src="lib/om/DeviceList.js"></script>
 	<script src="lib/om/Provider.js"></script>
@@ -135,7 +134,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div class="plotfrom"></div>
 	<div class="plotto"></div>	
 
@@ -560,6 +559,49 @@
 			<% } %>
 			</span>
 			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" name="<%= listItem.id %>_name" value="<%= listItem.name %>" class="form-control">
+
+			<div class="input-group-btn color">
+				<button id="<%= listItem.id %>_color" type="button" class="btn btn-default dropdown-toggle <%= listItem.color %>" data-toggle="dropdown">Color <span class="caret"></span></button>
+				<ul name="<%= listItem.id %>_color" class="listitem_color dropdown-menu pull-right">
+                    <li><a href="#" class="aqua"></a></li>
+                    <li><a href="#" class="black"></a></li>
+                    <li><a href="#" class="blue"></a></li>
+                    <li><a href="#" class="brown"></a></li>
+                    <li><a href="#" class="cyan"></a></li>
+                    <li><a href="#" class="darkblue"></a></li>
+                    <li><a href="#" class="darkcyan"></a></li>
+                    <li><a href="#" class="darkgrey"></a></li>
+                    <li><a href="#" class="darkgreen"></a></li>
+                    <li><a href="#" class="darkkhaki"></a></li>
+                    <li><a href="#" class="darkmagenta"></a></li>
+                    <li><a href="#" class="darkolivegreen"></a></li>
+                    <li><a href="#" class="darkorange"></a></li>
+                    <li><a href="#" class="darkorchid"></a></li>
+                    <li><a href="#" class="darkred"></a></li>
+                    <li><a href="#" class="darksalmon"></a></li>
+                    <li><a href="#" class="darkviolet"></a></li>
+                    <li><a href="#" class="fuchsia"></a></li>
+                    <li><a href="#" class="gold"></a></li>
+                    <li><a href="#" class="green"></a></li>
+                    <li><a href="#" class="indigo"></a></li>
+                    <li><a href="#" class="khaki"></a></li>
+                    <li><a href="#" class="lightblue"></a></li>
+                    <li><a href="#" class="lightgreen"></a></li>
+                    <li><a href="#" class="lightpink"></a></li>
+                    <li><a href="#" class="lime"></a></li>
+                    <li><a href="#" class="magenta"></a></li>
+                    <li><a href="#" class="maroon"></a></li>
+                    <li><a href="#" class="navy"></a></li>
+                    <li><a href="#" class="olive"></a></li>
+                    <li><a href="#" class="orange"></a></li>
+                    <li><a href="#" class="pink"></a></li>
+                    <li><a href="#" class="purple"></a></li>
+                    <li><a href="#" class="violet"></a></li>
+                    <li><a href="#" class="red"></a></li>
+                    <li><a href="#" class="silver"></a></li>
+				</ul>
+			</div>		
+
 			<span class="input-group-addon device-addon_current-value"><%= listItem.current_value %><%= listItem.symbol %></span>
 		</div>
 	</div>

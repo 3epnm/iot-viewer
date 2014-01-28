@@ -53,6 +53,58 @@ Date.prototype.getFormatDateTime = function () {
 
 
 /* **************************************************************************************************** */
+/* lib/array.js */
+/* **************************************************************************************************** */
+
+if ('function' !== typeof Array.prototype.reduce) {
+	Array.prototype.reduce = function(callback, opt_initialValue) {
+		'use strict';
+		if (null === this || 'undefined' === typeof this) {
+			// At the moment all modern browsers, that support strict mode, have
+			// native implementation of Array.prototype.reduce. For instance, IE8
+			// does not support strict mode, so this check is actually useless.
+			throw new TypeError('Array.prototype.reduce called on null or undefined');
+		}
+		if ('function' !== typeof callback) {
+			throw new TypeError(callback + ' is not a function');
+		}
+		var index, value,
+		length = this.length >>> 0,
+		isValueSet = false;
+		if (1 < arguments.length) {
+			value = opt_initialValue;
+			isValueSet = true;
+		}
+		for (index = 0; length > index; ++index) {
+			if (this.hasOwnProperty(index)) {
+				if (isValueSet) {
+					value = callback(value, this[index], index, this);
+				}
+				else {
+					value = this[index];
+					isValueSet = true;
+				}
+			}
+		}
+		if (!isValueSet) {
+			throw new TypeError('Reduce of empty array with no initial value');
+		}
+		return value;
+	};
+}
+
+/* **************************************************************************************************** */
+/* lib/string.js */
+/* **************************************************************************************************** */
+
+String.prototype.hashCode = function () {
+	return this.split("").reduce(function (a,b) {
+		a=((a<<5)-a)+b.charCodeAt(0);
+		return a&a
+	}, 0); 
+}
+
+/* **************************************************************************************************** */
 /* contrib/jquery/jquery-1.9.1.js */
 /* **************************************************************************************************** */
 
@@ -16662,15 +16714,18 @@ window.AppData = Backbone.Model.extend({
 		return {
 			from: null,
 			to: null,
+			load_from: null,
+			load_to: null,
 			show_points : false,
-			show_lines : true
+			show_lines : true,
+			pan : false,
+			zoom : true,
+			cursor: true
 		};
 	},
 	get: function (attr) {
 		if (typeof this[attr] == 'function')
-		{
 			return this[attr]();
-		}
 		return Backbone.Model.prototype.get.call(this, attr);
 	},
 	getFrom: function () {
@@ -16680,10 +16735,26 @@ window.AppData = Backbone.Model.extend({
 		return new Date(this.get('to'));
 	},
 	getFromTime: function () {
-		return new Date(this.get('from')).getTime();
+		return new Date(this.get('from'));
 	},
 	getToTime: function () {
-		return new Date(this.get('to')).getTime();
+		return new Date(this.get('to'));
+	},
+	getLoadFromTime : function () {
+		var datetime;
+		if (this.get('load_from'))
+			datetime =  new Date(this.get('load_from'));
+		datetime = this.getFrom();
+
+		return datetime;
+	},
+	getLoadToTime : function () {
+		var datetime;
+		if (this.get('load_to'))
+			datetime =  new Date(this.get('load_to'));
+		datetime = this.getTo();
+
+		return datetime;
 	},
 	load_application_data : function (url) {
 		if (!url) {
@@ -16700,11 +16771,12 @@ window.AppData = Backbone.Model.extend({
 				Providers.each(function (provider) {
 					ids.push(provider.id);
 				});
+
 				ids.forEach(function (id) {
 					Providers.get(id).del();
 					$("#panel").panelmenu('remove', document.getElementById(id));
 				});
-				PlotView.update();
+				
 				for (var name in result.provider) {
 					var provider = Providers.create({name : name});
 					provider.save();
@@ -16743,8 +16815,9 @@ window.AppDataList = Backbone.Collection.extend({
 });
 
 window.AppDataHistory = new AppDataList();
+AppDataHistory.fetch();
 
-var AppConfig = AppDataHistory.at(0);
+window.AppConfig = AppDataHistory.at(0);
 
 if (!AppConfig) {
 	AppDataHistory.create({ 
@@ -16752,12 +16825,14 @@ if (!AppConfig) {
 		to: 0
 	});
 	AppConfig = AppDataHistory.at(0);
-} 
+}
 
 var now = new Date();
 AppConfig.set({
-	from: new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 6, now.getMinutes(), 0, 0), 
-	to: now
+	from: new Date(now.getFullYear(), now.getMonth(), now.getDate(), now.getHours() - 12, 0, 0, 0),
+	to : now,
+	load_from: null,
+	load_to: null
 });
 
 AppConfig.save();
@@ -16805,11 +16880,22 @@ window.ProviderDriver = Backbone.Model.extend({
 					Devices.get(id).del();
 				});
 			}
-		})
-		
+		});
+	},
+	load_data : function (device, callback) {
+		var d = device.getDeviceData();
+		if (d.getMin() 
+			&& d.getMax() 
+			&& d.getMin() <= AppConfig.getLoadFromTime() 
+			&& d.getMax() >= AppConfig.getLoadToTime()) 
+		{
+			callback(d.getData(AppConfig.getLoadFromTime(), AppConfig.getLoadToTime()));
+			return;
+		}
+
+		this.load_provider_data(d, callback);
 	},
 	load: function (url, method, data, callback) {
-		AppView.showMask();
 		var that = this;
 
 		var req = $.ajax({
@@ -16818,7 +16904,6 @@ window.ProviderDriver = Backbone.Model.extend({
 			crossDomain: true,
 			contentType: 'application/json',
 			success: function (result) {
-				AppView.hideMask();
 				callback(result);
 			},
 			beforeSend: function (xhr) {
@@ -16851,12 +16936,10 @@ window.ProviderDriver = Backbone.Model.extend({
 
 window.ProviderDriverJsonP = ProviderDriver.extend({
 	load: function (url, method, data, callback) {
-		AppView.showMask();
 		var that = this;
 		$.jsonp({
 			url: url + "&callback=?",
 			success: function(data) {
-				AppView.hideMask();
 				callback(data);
 			},
 			error: function(d, msg) {
@@ -16908,43 +16991,27 @@ window.ProviderOpenSense = ProviderDriverJsonP.extend({
 			stream : this.get('endpoint') + "/feeds/{%feed_id}/events/?sense_key={%sense_key}&order_by=timetag"
 		}
 	},
-	load_data : function (device, callback) {
-		var url = this.complete(this.urls()["stream"].replace('{%feed_id}', device.get("feed_id")))
+	load_provider_data : function (d, callback) {
+		var url = this.complete(this.urls()["stream"].replace('{%feed_id}', d.getDevice().get("feed_id")))
 			+ "&gt=" + AppConfig.getFrom().toISOString()
 			+ "&lt=" + AppConfig.getTo().toISOString()
 			+ "&limit=1000"
 
-		var id = this.id;
-		
-		var symbol = "";
-		if (device.has("unit") && device.get("unit").symbol)
-			symbol = device.get("unit").symbol;
-
 		this.load(url, "get", null, function (result) {
-			var dataset;
-			var data = [];
 			result.forEach(function (item) {
-				var date = new Date(item.timetag);
-				data.push([date.getTime(), item.value]);
+				d.addData(new Date(item.timetag), parseFloat(item.value));
 			});
-
-			dataset = { 
-				symbol : symbol,
-				driver : id,
-				device : device.get("device_id"),
-				label: device.get("name"), 
-				data: data
-			};
-			callback(dataset);
+			callback(d.getData(AppConfig.getLoadFromTime(), AppConfig.getLoadToTime()));
 		});
 	},
 	load_meta : function (callback) {
+		AppView.showMask();
 		var that = this;
 		var feedids = [];
 		this.get("feedids").split(",").forEach(function (item) {
 			var feed_id = item.replace(/^\s+|\s+$/g, '');
 			if (feed_id != "") {
-				feedids.push(item)				
+				feedids.push(feed_id)				
 			}
 		});
 		var c = 0;
@@ -16981,6 +17048,7 @@ window.ProviderOpenSense = ProviderDriverJsonP.extend({
 					if (callback) {
 						callback(that);
 					}
+					AppView.hideMask();
 				}
 			});
 		});
@@ -17030,38 +17098,26 @@ window.ProviderThingSpeak = ProviderDriverJsonP.extend({
 			this.hasError = true;
 		}
 	},
-	load_data : function (device, callback) {
+	load_provider_data : function (d, callback) {
 		var urls = this.urls();
 		var url = this.complete(urls['stream']) 
-			+ device.get("device_id") + ".json"
+			+ d.getDevice().get("device_id") + ".json"
 			+ '?start=' + AppConfig.getFrom().toISOString().substr(0, 19).replace("T", "%20")
 			+ '&end=' + AppConfig.getTo().toISOString().substr(0, 19).replace("T", "%20")
 			+ '&limit=8000'
 			+ '&key=' + this.get("apikey");
 
-		var id = this.id;
 		this.load(url, "get", null, function (result) {
-			var dataset;
-			var data = [];
 			result.feeds.forEach(function (item) {
-				var date = new Date(item.created_at);
-				data.push([date.getTime(), item[device.get("device_id")]]);
+				d.addData(new Date(item.created_at), parseFloat(item[d.getDevice().get("device_id")]));
 			});
-
-			dataset = { 
-				symbol : "",
-				driver : id,
-				device : device.get("device_id"),
-				label: device.get("name"), 
-				data: data
-			};
-			callback(dataset);
+			callback(d.getData(AppConfig.getLoadFromTime(), AppConfig.getLoadToTime()));
 		});
 	},
 	load_meta : function (callback) {
 		var that = this;
+		AppView.showMask();
 		this.meta(function (result) {
-
 			var channel = result.channel;
 			channel.provider_id = channel.id;
 			delete channel.id;
@@ -17100,6 +17156,7 @@ window.ProviderThingSpeak = ProviderDriverJsonP.extend({
 			if (callback) {
 				callback(that);
 			}
+			AppView.hideMask();
 		});	
 	},
 	load_devices : function () {
@@ -17165,6 +17222,7 @@ window.ProviderXively = ProviderDriver.extend({
 		}
 	},
 	load_devices : function (callback) {
+		AppView.showMask();
 		var that = this;
 		var urls = this.urls();
 		var url = this.complete(urls["devices"]);
@@ -17186,6 +17244,7 @@ window.ProviderXively = ProviderDriver.extend({
 			if (callback) {
 				callback(that);
 			}
+			AppView.hideMask();
 		});
 	},
 	interval_value : function () {
@@ -17202,48 +17261,37 @@ window.ProviderXively = ProviderDriver.extend({
 			43200 : 1 * 365 * 24,
 			86400 : 1 * 365 * 24
 		}
-		var range = new Date(AppConfig.get('to')) - new Date(AppConfig.get('from'));
+		var range = AppConfig.getLoadToTime().getTime() - AppConfig.getLoadFromTime().getTime();
 		for (var i in interval) {
 			if (range < interval[i] * 3600000)
 				return i;
 		}
 		return 86400;
 	},
-	load_data : function (device, callback) {
+	load_provider_data : function (d, callback) {
 		var urls = this.urls();
 		var url = this.complete(urls['stream']) 
-			+ device.get("device_id")
-			+ '&start=' + AppConfig.get('from') 
-			+ '&end=' + AppConfig.get('to')
+			+ d.getDevice().get("device_id")
+			+ '&start=' + AppConfig.getLoadFromTime()
+			+ '&end=' + AppConfig.getLoadToTime()
 			+ '&limit=1000' 
 			+ '&interval=' + this.interval_value();
 
-		var that = this;
-		var symbol = "";
-		if (device.has("unit") && device.get("unit").symbol)
-			symbol = device.get("unit").symbol;
 
 		this.load(url, "get", null, function (result) {
-			var dataset;
 			result.datastreams.forEach(function (item) {
-				var data = [];
-				item.datapoints.forEach(function (datapoint) {
-					var date = new Date(datapoint.at);
-					data.push([date.getTime(), datapoint.value]);
-				});
-				dataset = { 
-					symbol : symbol,
-					driver : that.id,
-					device : item.id,
-					label: device.get("name"), 
-					data: data
-				};
+				if (item.datapoints) {
+					item.datapoints.forEach(function (datapoint) {
+						d.addData(new Date(datapoint.at), parseFloat(datapoint.value));
+					});
+				}
 			});
-			callback(dataset);
+			callback(d.getData(AppConfig.getLoadFromTime(), AppConfig.getLoadToTime()));
 		});
 	},
 	load_meta : function (callback) {
 		var that = this;
+		AppView.showMask();
 		this.meta(function (result) {
 			result.provider_id = result.id;
 			delete result.id;
@@ -17288,6 +17336,93 @@ window.ProviderDrivers = new ProviderDriverList();
 ProviderDrivers.fetch();
 
 /* **************************************************************************************************** */
+/* lib/om/DeviceData.js */
+/* **************************************************************************************************** */
+
+window.DeviceData = Backbone.Model.extend({
+	defaults: function() {
+		return {
+			data : {}
+		};
+	},
+	device : null,
+	setDevice : function (device) {
+		this.device = device;
+	},
+	getDevice : function () {
+		return this.device;
+	},
+	driver : null,
+	setDriver : function (driver) {
+		this.driver = driver;
+	},
+	getDriver : function () {
+		return this.driver;
+	},
+	getMin : function () {
+		var min = null;
+		for (var i in this.get('data')) {
+			i = parseInt(i);
+			if (min == null || min > parseInt(i))
+				min = parseInt(i);			
+		} 
+		if (min == null)
+			return null;
+
+		return new Date(min);
+	},
+	getMax : function () {
+		var max = null;
+		for (var i in this.get('data')) {
+			i = parseInt(i);
+			if (max == null || max < parseInt(i))
+				max = i;
+		} 
+		if (max == null)
+			return null;
+
+		return new Date(max);
+	},
+	length : function () {
+		var c = 0;
+		for (var i in this.get('data')) 
+			c++;
+		return c;
+	},
+	addData : function (datetime, value) {
+		var data = this.get("data");
+		data[datetime.getTime()] = value;
+		this.set({"data" : data});
+	},
+	prepareData : function (from, to) {
+		var from = new Date(from.getTime() - (120*1000));
+		var to = new Date(to.getTime() + (120*1000));
+		var data = this.get("data");
+		var ret = [];
+		for (var i in data) {
+			var date = new Date(parseInt(i));
+			if (date >= from && date <= to) {
+				ret.push([date.getTime(), data[i]]);
+			}
+		}
+		ret.sort(function (a, b) {
+			return a[0] - b[0];
+		});
+		return ret;
+	},
+	getData : function (from, to) {
+		return { 
+			symbol : this.getDevice().getUnitSymbol(),
+			driver : this.getDriver().id,
+			device : this.getDevice().get("device_id"),
+			label  : this.getDevice().get("name"),
+			color  : this.getDevice().get("color"), 
+			data   : this.prepareData(from, to)
+		};		
+	}
+});
+
+/* **************************************************************************************************** */
 /* lib/om/Device.js */
 /* **************************************************************************************************** */
 
@@ -17299,10 +17434,26 @@ window.Device = Backbone.Model.extend({
 			current_value: null,
 			device_id: null,
 			name: "",
+			color: "",
 			max_value: null,
 			min_value: null,
 			active: false
 		};
+	},
+	devicedata : null,
+	getDeviceData : function () {
+		if (!this.devicedata) {
+			this.devicedata = new DeviceData();
+			this.devicedata.setDevice(this);
+			this.devicedata.setDriver(ProviderDrivers.get(this.get("driver")));
+		}
+		return this.devicedata;
+	},
+	getUnitSymbol : function () {
+		var symbol = "";
+		if (this.has("unit") && this.get("unit").symbol)
+			symbol = this.get("unit").symbol;
+		return symbol;
 	},
 	del : function () {
 		this.destroy({
@@ -17568,22 +17719,42 @@ var AppView = (function () {
 var AppConfigView = Backbone.View.extend({
 	events: {
 		"change input[type='checkbox']" : "set",
-		"click .save" : "set",
+		"click .save" : "save",
 		"click .cancel" : "cancel"
 	},
-	height: 230,
+	height: 310,
 	render: function() {
 		var template = _.template( $("#appconfig_template").html(), this.model.attributes );
 		this.$el.html( template );
-		$('input[type="checkbox"]', this.$el).bootstrapSwitch();
+		$('input[type="checkbox"], input[type="radio"]', this.$el).bootstrapSwitch();
+
+		var that = this;
+		$('input[type="radio"]', this.$el).on('switch-change', function (e, data) {
+			switch ($(data.el).val()) {
+				case "pan" :
+					if (data.value && that.model.get("zoom"))
+						$("input[value='zoom']", that.$el).bootstrapSwitch('setState', false);
+				break;
+				case "zoom" :
+					if (data.value && that.model.get("pan"))
+						$("input[value='pan']", that.$el).bootstrapSwitch('setState', false);
+				break;
+			}
+			that.set();
+		});
 	},
 	set : function () {
 		var data = {
 			show_points : $( "input[name='show_points']", this.$el ).prop('checked'),
-			show_lines : $( "input[name='show_lines']", this.$el ).prop('checked')
+			show_lines : $( "input[name='show_lines']", this.$el ).prop('checked'),
+			cursor : $( "input[name='cursor']", this.$el ).prop('checked'),
+			pan : $( "input[value='pan']", this.$el ).prop('checked'),
+			zoom : $( "input[value='zoom']", this.$el ).prop('checked')
 		}
 		this.model.set(data);
 		this.model.save();
+
+		PlotView.init();
 	},
 	cancel : function () {
 		AppView.hideView(true);
@@ -17663,9 +17834,10 @@ var DevicesView = Backbone.View.extend({
 		"click input[type=checkbox]" : "set",
 		"click .edit" : "edit",
 		"click .reload" : "reload",
-		"click .cancel" : "cancel"
+		"click .cancel" : "cancel",
+		"click .listitem_color a" : "set_color"
 	},
-	height: 390,
+	height: 430,
 	initialize: function() {
 		this.render();
 	},
@@ -17684,12 +17856,22 @@ var DevicesView = Backbone.View.extend({
 				name: item.get("name"), 
 				active: item.get("active"),
 				current_value: item.get("current_value"),
-				symbol: " " + symbol
+				symbol: " " + symbol,
+				color: item.get("color")
 			});
 		});
 
 		var template = _.template( $("#devices_view").html(), vars );
 		this.$el.html( template );
+	},
+	set_color: function (e) {
+		var name = $(e.currentTarget).parent().parent().attr("name");
+		var id = name.substr(0, name.length - 6);
+		var device = Devices.get(id);
+		device.save({'color' : e.currentTarget.className});
+		$("#"+id+"_color").attr("class", "btn btn-default dropdown-toggle " + e.currentTarget.className);
+		PlotView.load();
+		return false;
 	},
 	set: function () {
 		var that = this;
@@ -21688,6 +21870,365 @@ The plugin allso adds the following methods to the plot object:
 
 
 /* **************************************************************************************************** */
+/* contrib/flot/jquery.flot.navigate.js */
+/* **************************************************************************************************** */
+
+/* Flot plugin for adding the ability to pan and zoom the plot.
+
+Copyright (c) 2007-2013 IOLA and Ole Laursen.
+Licensed under the MIT license.
+
+The default behaviour is double click and scrollwheel up/down to zoom in, drag
+to pan. The plugin defines plot.zoom({ center }), plot.zoomOut() and
+plot.pan( offset ) so you easily can add custom controls. It also fires
+"plotpan" and "plotzoom" events, useful for synchronizing plots.
+
+The plugin supports these options:
+
+	zoom: {
+		interactive: false
+		trigger: "dblclick" // or "click" for single click
+		amount: 1.5         // 2 = 200% (zoom in), 0.5 = 50% (zoom out)
+	}
+
+	pan: {
+		interactive: false
+		cursor: "move"      // CSS mouse cursor value used when dragging, e.g. "pointer"
+		frameRate: 20
+	}
+
+	xaxis, yaxis, x2axis, y2axis: {
+		zoomRange: null  // or [ number, number ] (min range, max range) or false
+		panRange: null   // or [ number, number ] (min, max) or false
+	}
+
+"interactive" enables the built-in drag/click behaviour. If you enable
+interactive for pan, then you'll have a basic plot that supports moving
+around; the same for zoom.
+
+"amount" specifies the default amount to zoom in (so 1.5 = 150%) relative to
+the current viewport.
+
+"cursor" is a standard CSS mouse cursor string used for visual feedback to the
+user when dragging.
+
+"frameRate" specifies the maximum number of times per second the plot will
+update itself while the user is panning around on it (set to null to disable
+intermediate pans, the plot will then not update until the mouse button is
+released).
+
+"zoomRange" is the interval in which zooming can happen, e.g. with zoomRange:
+[1, 100] the zoom will never scale the axis so that the difference between min
+and max is smaller than 1 or larger than 100. You can set either end to null
+to ignore, e.g. [1, null]. If you set zoomRange to false, zooming on that axis
+will be disabled.
+
+"panRange" confines the panning to stay within a range, e.g. with panRange:
+[-10, 20] panning stops at -10 in one end and at 20 in the other. Either can
+be null, e.g. [-10, null]. If you set panRange to false, panning on that axis
+will be disabled.
+
+Example API usage:
+
+	plot = $.plot(...);
+
+	// zoom default amount in on the pixel ( 10, 20 )
+	plot.zoom({ center: { left: 10, top: 20 } });
+
+	// zoom out again
+	plot.zoomOut({ center: { left: 10, top: 20 } });
+
+	// zoom 200% in on the pixel (10, 20)
+	plot.zoom({ amount: 2, center: { left: 10, top: 20 } });
+
+	// pan 100 pixels to the left and 20 down
+	plot.pan({ left: -100, top: 20 })
+
+Here, "center" specifies where the center of the zooming should happen. Note
+that this is defined in pixel space, not the space of the data points (you can
+use the p2c helpers on the axes in Flot to help you convert between these).
+
+"amount" is the amount to zoom the viewport relative to the current range, so
+1 is 100% (i.e. no change), 1.5 is 150% (zoom in), 0.7 is 70% (zoom out). You
+can set the default in the options.
+
+*/
+
+// First two dependencies, jquery.event.drag.js and
+// jquery.mousewheel.js, we put them inline here to save people the
+// effort of downloading them.
+
+/*
+jquery.event.drag.js ~ v1.5 ~ Copyright (c) 2008, Three Dub Media (http://threedubmedia.com)
+Licensed under the MIT License ~ http://threedubmedia.googlecode.com/files/MIT-LICENSE.txt
+*/
+(function(a){function e(h){var k,j=this,l=h.data||{};if(l.elem)j=h.dragTarget=l.elem,h.dragProxy=d.proxy||j,h.cursorOffsetX=l.pageX-l.left,h.cursorOffsetY=l.pageY-l.top,h.offsetX=h.pageX-h.cursorOffsetX,h.offsetY=h.pageY-h.cursorOffsetY;else if(d.dragging||l.which>0&&h.which!=l.which||a(h.target).is(l.not))return;switch(h.type){case"mousedown":return a.extend(l,a(j).offset(),{elem:j,target:h.target,pageX:h.pageX,pageY:h.pageY}),b.add(document,"mousemove mouseup",e,l),i(j,!1),d.dragging=null,!1;case!d.dragging&&"mousemove":if(g(h.pageX-l.pageX)+g(h.pageY-l.pageY)<l.distance)break;h.target=l.target,k=f(h,"dragstart",j),k!==!1&&(d.dragging=j,d.proxy=h.dragProxy=a(k||j)[0]);case"mousemove":if(d.dragging){if(k=f(h,"drag",j),c.drop&&(c.drop.allowed=k!==!1,c.drop.handler(h)),k!==!1)break;h.type="mouseup"}case"mouseup":b.remove(document,"mousemove mouseup",e),d.dragging&&(c.drop&&c.drop.handler(h),f(h,"dragend",j)),i(j,!0),d.dragging=d.proxy=l.elem=!1}return!0}function f(b,c,d){b.type=c;var e=a.event.dispatch.call(d,b);return e===!1?!1:e||b.result}function g(a){return Math.pow(a,2)}function h(){return d.dragging===!1}function i(a,b){a&&(a.unselectable=b?"off":"on",a.onselectstart=function(){return b},a.style&&(a.style.MozUserSelect=b?"":"none"))}a.fn.drag=function(a,b,c){return b&&this.bind("dragstart",a),c&&this.bind("dragend",c),a?this.bind("drag",b?b:a):this.trigger("drag")};var b=a.event,c=b.special,d=c.drag={not:":input",distance:0,which:1,dragging:!1,setup:function(c){c=a.extend({distance:d.distance,which:d.which,not:d.not},c||{}),c.distance=g(c.distance),b.add(this,"mousedown",e,c),this.attachEvent&&this.attachEvent("ondragstart",h)},teardown:function(){b.remove(this,"mousedown",e),this===d.dragging&&(d.dragging=d.proxy=!1),i(this,!0),this.detachEvent&&this.detachEvent("ondragstart",h)}};c.dragstart=c.dragend={setup:function(){},teardown:function(){}}})(jQuery);
+
+/* jquery.mousewheel.min.js
+ * Copyright (c) 2011 Brandon Aaron (http://brandonaaron.net)
+ * Licensed under the MIT License (LICENSE.txt).
+ * Thanks to: http://adomas.org/javascript-mouse-wheel/ for some pointers.
+ * Thanks to: Mathias Bank(http://www.mathias-bank.de) for a scope bug fix.
+ * Thanks to: Seamus Leahy for adding deltaX and deltaY
+ *
+ * Version: 3.0.6
+ *
+ * Requires: 1.2.2+
+ */
+(function(d){function e(a){var b=a||window.event,c=[].slice.call(arguments,1),f=0,e=0,g=0,a=d.event.fix(b);a.type="mousewheel";b.wheelDelta&&(f=b.wheelDelta/120);b.detail&&(f=-b.detail/3);g=f;void 0!==b.axis&&b.axis===b.HORIZONTAL_AXIS&&(g=0,e=-1*f);void 0!==b.wheelDeltaY&&(g=b.wheelDeltaY/120);void 0!==b.wheelDeltaX&&(e=-1*b.wheelDeltaX/120);c.unshift(a,f,e,g);return(d.event.dispatch||d.event.handle).apply(this,c)}var c=["DOMMouseScroll","mousewheel"];if(d.event.fixHooks)for(var h=c.length;h;)d.event.fixHooks[c[--h]]=d.event.mouseHooks;d.event.special.mousewheel={setup:function(){if(this.addEventListener)for(var a=c.length;a;)this.addEventListener(c[--a],e,!1);else this.onmousewheel=e},teardown:function(){if(this.removeEventListener)for(var a=c.length;a;)this.removeEventListener(c[--a],e,!1);else this.onmousewheel=null}};d.fn.extend({mousewheel:function(a){return a?this.bind("mousewheel",a):this.trigger("mousewheel")},unmousewheel:function(a){return this.unbind("mousewheel",a)}})})(jQuery);
+
+
+
+
+(function ($) {
+	var options = {
+		xaxis: {
+			zoomRange: null, // or [number, number] (min range, max range)
+			panRange: null // or [number, number] (min, max)
+		},
+		zoom: {
+			interactive: false,
+			trigger: "dblclick", // or "click" for single click
+			amount: 1.5 // how much to zoom relative to current position, 2 = 200% (zoom in), 0.5 = 50% (zoom out)
+		},
+		pan: {
+			interactive: false,
+			cursor: "move",
+			frameRate: 20
+		}
+	};
+
+	function init(plot) {
+		function onZoomClick(e, zoomOut) {
+			var c = plot.offset();
+			c.left = e.pageX - c.left;
+			c.top = e.pageY - c.top;
+			if (zoomOut)
+				plot.zoomOut({ center: c });
+			else
+				plot.zoom({ center: c });
+		}
+
+		function onMouseWheel(e, delta) {
+			e.preventDefault();
+			onZoomClick(e, delta < 0);
+			return false;
+		}
+		
+		var prevCursor = 'default', prevPageX = 0, prevPageY = 0,
+			panTimeout = null;
+
+		function onDragStart(e) {
+			if (e.which != 1)  // only accept left-click
+				return false;
+			var c = plot.getPlaceholder().css('cursor');
+			if (c)
+				prevCursor = c;
+			plot.getPlaceholder().css('cursor', plot.getOptions().pan.cursor);
+			prevPageX = e.pageX;
+			prevPageY = e.pageY;
+		}
+		
+		function onDrag(e) {
+			var frameRate = plot.getOptions().pan.frameRate;
+			if (panTimeout || !frameRate)
+				return;
+
+			panTimeout = setTimeout(function () {
+				/*
+				plot.pan({ 
+					left: prevPageX - e.pageX,
+					top: prevPageY - e.pageY
+				});
+				*/
+				plot.pan({ 
+					left: prevPageX - e.pageX
+				});
+				prevPageX = e.pageX;
+				prevPageY = e.pageY;
+													
+				panTimeout = null;
+			}, 1 / frameRate * 1000);
+		}
+
+		function onDragEnd(e) {
+			if (panTimeout) {
+				clearTimeout(panTimeout);
+				panTimeout = null;
+			}
+					
+			plot.getPlaceholder().css('cursor', prevCursor);
+			plot.pan({ left: prevPageX - e.pageX,
+					   top: prevPageY - e.pageY });
+		}
+		
+		function bindEvents(plot, eventHolder) {
+			var o = plot.getOptions();
+			if (o.zoom.interactive) {
+				eventHolder[o.zoom.trigger](onZoomClick);
+				eventHolder.mousewheel(onMouseWheel);
+			}
+
+			if (o.pan.interactive) {
+				eventHolder.bind("dragstart", { distance: 10 }, onDragStart);
+				eventHolder.bind("drag", onDrag);
+				eventHolder.bind("dragend", onDragEnd);
+			}
+		}
+
+		plot.zoomOut = function (args) {
+			if (!args)
+				args = {};
+			
+			if (!args.amount)
+				args.amount = plot.getOptions().zoom.amount;
+
+			args.amount = 1 / args.amount;
+			plot.zoom(args);
+		};
+		
+		plot.zoom = function (args) {
+			if (!args)
+				args = {};
+			
+			var c = args.center,
+				amount = args.amount || plot.getOptions().zoom.amount,
+				w = plot.width(), h = plot.height();
+
+			if (!c)
+				c = { left: w / 2, top: h / 2 };
+				
+			var xf = c.left / w,
+				yf = c.top / h,
+				minmax = {
+					x: {
+						min: c.left - xf * w / amount,
+						max: c.left + (1 - xf) * w / amount
+					},
+					y: {
+						min: c.top - yf * h / amount,
+						max: c.top + (1 - yf) * h / amount
+					}
+				};
+
+			$.each(plot.getAxes(), function(_, axis) {
+				var opts = axis.options,
+					min = minmax[axis.direction].min,
+					max = minmax[axis.direction].max,
+					zr = opts.zoomRange,
+					pr = opts.panRange;
+
+				if (zr === false) // no zooming on this axis
+					return;
+					
+				min = axis.c2p(min);
+				max = axis.c2p(max);
+				if (min > max) {
+					// make sure min < max
+					var tmp = min;
+					min = max;
+					max = tmp;
+				}
+
+				//Check that we are in panRange
+				if (pr) {
+					if (pr[0] != null && min < pr[0]) {
+						min = pr[0];
+					}
+					if (pr[1] != null && max > pr[1]) {
+						max = pr[1];
+					}
+				}
+
+				var range = max - min;
+				if (zr &&
+					((zr[0] != null && range < zr[0] && amount >1) ||
+					 (zr[1] != null && range > zr[1] && amount <1)))
+					return;
+			
+				opts.min = min;
+				opts.max = max;
+			});
+			
+			plot.setupGrid();
+			plot.draw();
+			
+			if (!args.preventEvent)
+				plot.getPlaceholder().trigger("plotzoom", [ plot, args ]);
+		};
+
+		plot.pan = function (args) {
+			var delta = {
+				x: +args.left,
+				y: +args.top
+			};
+
+			if (isNaN(delta.x))
+				delta.x = 0;
+			if (isNaN(delta.y))
+				delta.y = 0;
+
+			$.each(plot.getAxes(), function (_, axis) {
+				var opts = axis.options,
+					min, max, d = delta[axis.direction];
+
+				min = axis.c2p(axis.p2c(axis.min) + d),
+				max = axis.c2p(axis.p2c(axis.max) + d);
+
+				var pr = opts.panRange;
+				if (pr === false) // no panning on this axis
+					return;
+				
+				if (pr) {
+					// check whether we hit the wall
+					if (pr[0] != null && pr[0] > min) {
+						d = pr[0] - min;
+						min += d;
+						max += d;
+					}
+					
+					if (pr[1] != null && pr[1] < max) {
+						d = pr[1] - max;
+						min += d;
+						max += d;
+					}
+				}
+				
+				opts.min = min;
+				opts.max = max;
+			});
+			
+			plot.setupGrid();
+			plot.draw();
+			
+			if (!args.preventEvent)
+				plot.getPlaceholder().trigger("plotpan", [ plot, args ]);
+		};
+
+		function shutdown(plot, eventHolder) {
+			eventHolder.unbind(plot.getOptions().zoom.trigger, onZoomClick);
+			eventHolder.unbind("mousewheel", onMouseWheel);
+			eventHolder.unbind("dragstart", onDragStart);
+			eventHolder.unbind("drag", onDrag);
+			eventHolder.unbind("dragend", onDragEnd);
+			if (panTimeout)
+				clearTimeout(panTimeout);
+		}
+		
+		plot.hooks.bindEvents.push(bindEvents);
+		plot.hooks.shutdown.push(shutdown);
+	}
+	
+	$.plot.plugins.push({
+		init: init,
+		options: options,
+		name: 'navigate',
+		version: '1.3'
+	});
+})(jQuery);
+
+
+/* **************************************************************************************************** */
 /* contrib/flot/jquery.flot.time.js */
 /* **************************************************************************************************** */
 
@@ -22134,9 +22675,25 @@ var PlotView = (function () {
 	var instance_plot;  
 
 	var selector = "#flot";
+
 	var updateLegendTimeout = null;
-	var latestPosition = null;
+	var updateTimeout = null;
+	
 	var plotdata = {};
+	var events = {};
+	
+	var updateRangeLegend = function () {
+		var axes = instance_plot.getAxes();
+
+		$(".plotfrom").text(new Date(axes.xaxis.min).getFormatDateTime());
+		$(".plotto").text(new Date(axes.xaxis.max).getFormatDateTime());		
+
+		$(".plotfrom, .plotto").show();	
+	};
+
+	var hideRangeLegend = function () {
+		$(".plotfrom, .plotto").hide();		
+	};
 
 	var updateLegendX = function (datetime) {
 		if ($('.legendX', $(selector)).length == 0) {
@@ -22145,36 +22702,27 @@ var PlotView = (function () {
 		}
 		$(selector + " .legendX .datetime").text(datetime.getFormatDateTime());
 	};
+
 	var removeLegendX = function () {
 		$(selector + ' .legendX').remove();
 	};
-	var removeLegend = function () {
-		removeLegendX();
-		var legends = $(selector + " .legend tr");
-		$(legends).each (function () {
-			if ($("td", this).length > 2) {
-				$("td", this).last().remove();
-			}
-		});
-	};
-	var updateLegend = function () {
+
+	var updateLegendY = function (pos) {
 		var i, j, dataset = instance_plot.getData();
+		
+		updateLegendTimeout = null;
 
 		if (dataset.length < 1)
 			return;
 
-		var legends = $(selector + " .legend tr");
-		updateLegendTimeout = null;
-
-		var pos = latestPosition;
-
 		updateLegendX(new Date(pos.x));
 
+		var legends = $(selector + " .legend tr");
 		var axes = instance_plot.getAxes();
 
 		if (pos.x < axes.xaxis.min || pos.x > axes.xaxis.max ||
 			pos.y < axes.yaxis.min || pos.y > axes.yaxis.max) {
-			removeLegend();
+			removeLegendY();
 			return;
 		}
 		
@@ -22188,7 +22736,6 @@ var PlotView = (function () {
 
 			if (typeof(series.data[j-1]) != "undefined" 
 				&& typeof(series.data[j]) != "undefined") {
-
 				var y,
 					p1 = series.data[j - 1],
 					p2 = series.data[j];
@@ -22211,10 +22758,35 @@ var PlotView = (function () {
 				}
 				$("td", legends.eq(i)).last().text(y.toFixed(2) + " " + series.symbol);
 			} else {
-				removeLegend();
+				removeLegendY();
 			}
 		}
 	};
+
+	var removeLegendY = function () {
+		removeLegendX();
+		var legends = $(selector + " .legend tr");
+
+		$(legends).each (function () {
+			if ($("td", this).length > 2) {
+				$("td", this).last().remove();
+			}
+		});
+	};
+
+	var showMask = function () {
+		removeLegendY();
+		if ($(selector).is(":visible") && $(selector + " canvas").length > 0) {
+			$(selector).append('<div class="mask" style="right: ' + $('.legend div', $(selector)).first().css('right') + '">loading...</div>');
+		} else {
+			AppView.showMask();
+		}
+	};
+
+	var hideMask = function () {
+		AppView.hideMask();
+	};
+
 	var get_plotdata = function () {
 		var data = [];
 		for (var i in plotdata) {
@@ -22228,12 +22800,13 @@ var PlotView = (function () {
 		}
 		return data;
 	};
+
 	var getOptions = function () {
-		return {
+		var obj = {
 			xaxis: { 
 				mode: "time",
-				min: new Date(AppConfig.get('from')),
-				max: new Date(AppConfig.get('to'))
+				min: new Date(AppConfig.get('from')).getTime(),
+				max: new Date(AppConfig.get('to')).getTime()
 			},
 			lines: { 
 				show: AppConfig.get("show_lines")  
@@ -22241,97 +22814,137 @@ var PlotView = (function () {
 			points: { 
 				show: AppConfig.get("show_points") 
 			},
-			crosshair: {
-				mode: "x"
-			},
-			selection: {
-				mode: "x"
-			},
 			grid: {
 				hoverable: true,
 				autoHighlight: false
 			}
+		};
+		if (AppConfig.get("cursor")) {
+			obj.crosshair = { mode: "x" };
+		}
+		if (AppConfig.get("zoom")) {
+			obj.selection = { mode: "x" };
+		}
+		if (AppConfig.get("pan")) {
+			obj.pan = { interactive: true };
+		}
+		return obj;
+	};
+	var destroy = function () {
+		if (instance_plot) {
+			hideRangeLegend();
+			$(selector).unbind();
+			instance_plot.shutdown();
+			$(selector).html("");
+			delete instance_plot;
 		}
 	};
-	var init_plot = function () {
+	var init = function (force) {
+		destroy();
+
 		var data = get_plotdata();
-		if (data.length < 1)
-			return;
-
 		instance_plot = $.plot(selector, data, getOptions());
+		updateRangeLegend();
 
-		$(selector).bind("plotselected", function (event, ranges) {
-			AppConfig.set({
-				from: new Date(parseInt(ranges.xaxis.from.toFixed(1))),
-				to: new Date(parseInt(ranges.xaxis.to.toFixed(1)))
+		if (AppConfig.get("zoom")) {
+			events.zoom = $(selector).bind("plotselected", function (event, ranges) {
+				removeLegendY();
+				AppConfig.set({
+					from: new Date(parseInt(ranges.xaxis.from.toFixed(1))),
+					to: new Date(parseInt(ranges.xaxis.to.toFixed(1)))
+				});
+				AppConfig.save();
+				DateRange.reload();
+			});	
+		}
+
+		if (AppConfig.get("pan")) {
+			events.pan =  $(selector).bind("plotpan", function (event, plot) {
+				if (updateLegendTimeout)
+					window.clearTimeout(updateLegendTimeout);
+				updateLegendTimeout = true;
+				removeLegendY();
+				
+				updateRangeLegend();
+				
+				if (updateTimeout)
+					window.clearTimeout(updateTimeout);
+
+				updateTimeout = window.setTimeout(function () { 
+					var axes = plot.getAxes();
+					var set = {
+						from : new Date(parseInt(axes.xaxis.min)),
+						to : new Date(parseInt(axes.xaxis.max)),
+						load_from : new Date(parseInt(axes.xaxis.min)),
+						load_to : new Date(parseInt(axes.xaxis.max))
+					};
+					AppConfig.save(set, {
+						success: function () {
+							updateLegendTimeout = null;
+							DateRange.reload();
+						}
+					});
+				}, 150);
 			});
-			AppConfig.save();
-			PlotView.load();
-		});
+		}
 
-		$(selector).bind("plothover",  function (event, pos, item) {
-			latestPosition = pos;
-			if (!updateLegendTimeout) {
-				updateLegendTimeout = setTimeout(updateLegend, 50);
-			}
+		if (AppConfig.get("cursor")) {
+			events.cursor = $(selector).bind("plothover",  function (event, pos, item) {
+				if (!updateLegendTimeout)
+					updateLegendTimeout = window.setTimeout(function () { updateLegendY(pos); }, 10);
+			});
+		}
+	};
+
+	var update = function() {
+		hideMask();
+		var data = get_plotdata();
+
+		if (data.length > 0) {
+			$(selector).show();
+			instance_plot = $.plot(selector, data, getOptions());
+			updateRangeLegend();
+		}
+		else {
+			$(selector).hide();
+			hideRangeLegend();
+		}
+	};
+
+	var load = function () {
+		showMask();
+
+		var active = Devices.where({ active: true });
+		if (active.length < 1) {
+			return update();
+		}
+
+		var len = Devices.where({ active: true }).length;
+		var cnt = 0;
+		active.forEach(function (device) {
+			var driver_id = device.get('driver');
+			var driver = ProviderDrivers.get(driver_id);
+			driver.load_data(device, function (data) { 
+				plotdata[(data.device+data.driver).hashCode()] = data;
+				if (++cnt == len) {
+					update();
+				}
+			});
 		});
 	};
-	function init () {
-		var hashCode = function(s) {
-			return s.split("").reduce(function(a,b){a=((a<<5)-a)+b.charCodeAt(0);return a&a},0);              
-		};
-		var add_plotdata = function (item) {
-			plotdata[hashCode(item.device+item.driver)] = item;
-		};
-		var updateplot = function() {
-			AppView.hideMask();
-			if (!instance_plot) {
-				init_plot();
-				return;
-			}
-			var data = get_plotdata();
-			if (data.length < 1) {
-				instance_plot.shutdown();
-				$(selector).html("");
-				delete instance_plot;
-			} else {
-				instance_plot = $.plot(selector, data, getOptions());
-			}
-		};
-		var load = function () {
-			var that = this;
-			var len = Devices.where({ active: true }).length;
-			var cnt = 0;
-			plotdata = {};
-			var active = Devices.where({ active: true });
-			if (active.length < 1) {
-				updateplot();
-			}
-			active.forEach(function (device) {
-				var driver_id = device.get('driver');
-				var driver = ProviderDrivers.get(driver_id);
-				driver.load_data(device, function (data) { 
-					add_plotdata(data);
-					if (++cnt == len) {
-						updateplot();
-					} else {
-						AppView.showMask();
-					}
-				});
-			});
-		};
+	function construct () {
+		$(document).ready(function () {
+			init();
+		});
 		return {
-			load : function () {
-				load();
-			},
-			update : function () {
-				updateplot();
-			}
+			init : init,
+			load : load,
+			update : update
 		}
 	};
 	return (function () {
 		if ( !instance ) {
-			instance = init();
+			instance = construct();
 		}
 		return instance;
 	})();
@@ -22704,125 +23317,6 @@ var PlotView = (function () {
 		});
 	};
 })(jQuery);
-
-/* **************************************************************************************************** */
-/* lib/DateRange.js */
-/* **************************************************************************************************** */
-
-var date_range = {
-	from: new Date(AppConfig.get('from')),
-	to:  new Date(AppConfig.get('to'))
-}
-
-function update(section, datetime) {	
-	var getIndexForValue = function (elem, value) {
-		for (var i=0; i<elem.options.length; i++)
-			if (elem.options[i].value == value)
-				return i;
-	}
-
-	$("#" + section + "_date").drum('setIndex', datetime.getDate()-1); 
-	$("#" + section + "_month").drum('setIndex', datetime.getMonth()); 
-	$("#" + section + "_fullYear").drum('setIndex', getIndexForValue($("#" + section + "_fullYear")[0], datetime.getFullYear())); 
-	$("#" + section + "_hours").drum('setIndex', datetime.getHours()); 
-	$("#" + section + "_minutes").drum('setIndex', datetime.getMinutes()); 
-	
-	$('.date_range_' + section + '_header .selection').html(datetime.getFormatDateTime());		
-}
-
-var AppConfigChange = function (e) {
-	update('from', AppConfig.getFrom());
-	update('to', AppConfig.getTo());
-	PlotView.load();
-};
-
-AppConfig.on("change", AppConfigChange);
-
-$(document).ready(function () {
-	$("select.date").drum({
-		onChange : function (elem) {
-			var section = elem.name.substr(0, elem.name.indexOf("_"));
-			var arr = {'date' : 'setDate', 'month' : 'setMonth', 'fullYear' : 'setFullYear', 'hours' : 'setHours', 'minutes' : 'setMinutes'};
-			var datetime = new Date();
-			for (var s in arr) {
-				var i = ($("form[name='date_" + section + "'] select[name='" + section + "_" + s + "']"))[0].value;
-				eval ("datetime." + arr[s] + "(" + i + ")");
-			}
-			datetime.setSeconds(0);
-
-			date_range[section] = datetime;
-
-			if (section == "from" && date_range["from"] > date_range["to"]) {
-				update("to", new Date(datetime.getTime() + 60000));
-			}
-			if (section == "to" && date_range["from"] > date_range["to"]) {
-				update("from", new Date(datetime.getTime() - 60000));
-			}
-		}
-	});
-
-	AppConfigChange();
-
-	var Hammertime = new Hammer(document.getElementById('lower_menu_handle'), {
-		prevent_default: true,
-		no_mouseevents: true
-	});
-	
-	Hammertime.on("tap", function (e) {
-		$(e.target).blur();
-
-		if ($(e.target).hasClass("now")) {
-
-			var datetime = new Date();
-			AppConfig.set({
-				from: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() - 6, datetime.getMinutes(), 0, 0), 
-				to: datetime
-			});
-			AppConfig.save();
-
-		} else if ($(e.target).hasClass("set")) {
-
-			AppConfig.set(date_range);
-			AppConfig.save();
-
-		} else if ($(e.target).hasClass("today")) {
-
-			var now = new Date();
-			AppConfig.set({
-				from: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0),
-				to : new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 0, 0)
-			});
-			AppConfig.save();
-
-		} else if ($(e.target).hasClass("left")) {
-
-			var datetime = AppConfig.getFrom();
-			AppConfig.set({
-				from: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() - 6, datetime.getMinutes(), 0, 0), 
-				to: datetime
-			});
-			AppConfig.save();
-
-		} else if ($(e.target).hasClass("right")) {
-
-			var datetime = AppConfig.getTo();
-			AppConfig.set({
-				from: datetime,
-				to: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() + 6, datetime.getMinutes(), 0, 0)
-			});
-			AppConfig.save();
-
-		} else {
-
-			$(".date_range" ).toggleClass("lower_menu_close");
-			$(".date_range .handle" ).toggleClass("show_up");
-			$(".date_range .handle" ).toggleClass("show_down");
-			$(".date_range .handle .btn_grp" ).toggle();
-
-		}
-	});
-});
-
 
 /* **************************************************************************************************** */
 /* lib/views/MenuView.js */
@@ -23203,6 +23697,53 @@ $(document).on("blur", "input[type='text']", false, function (e) {
 	}, 100);
 });
 
+var DateRange = {
+	status : {
+		from: new Date(AppConfig.get('from')),
+		to:  new Date(AppConfig.get('to'))
+	},
+	setStatus : function (section, datetime) {
+		this.status[section] = datetime;
+
+		DateRange.update(section, datetime);
+
+		if (section == "from" && this.status.from > this.status.to) {
+			this.status.to = new Date(datetime.getTime() + 120000);
+			this.update("to", this.status.to);
+		}
+
+		if (section == "to" && this.status.from > this.status.to) {
+			this.status.from = new Date(datetime.getTime() - 120000);
+			this.update("from", this.status.from);
+		}
+	},
+	update : function (section, datetime) {	
+		var getIndexForValue = function (elem, value) {
+			for (var i=0; i<elem.options.length; i++)
+				if (elem.options[i].value == value)
+					return i;
+		}
+
+		$("#" + section + "_date").drum('setIndex', datetime.getDate()-1); 
+		$("#" + section + "_month").drum('setIndex', datetime.getMonth()); 
+		$("#" + section + "_fullYear").drum('setIndex', getIndexForValue($("#" + section + "_fullYear")[0], datetime.getFullYear())); 
+		$("#" + section + "_hours").drum('setIndex', datetime.getHours()); 
+		$("#" + section + "_minutes").drum('setIndex', datetime.getMinutes()); 
+		
+		$('.date_range_' + section + '_header .selection').html(datetime.getFormatDateTime());	
+	},
+	set : function () {
+		AppConfig.set(this.status);
+		AppConfig.save();
+		PlotView.load();
+	},
+	reload : function () {
+		this.update('from', AppConfig.getFrom());
+		this.update('to', AppConfig.getTo());
+		PlotView.load();		
+	}
+}
+
 $(document).ready(function () {
 	$("#panel").panelmenu({
 		onBeforeCreate : function (name) {
@@ -23236,5 +23777,85 @@ $(document).ready(function () {
 
 	Providers.forEach (function (item) {
 		$("#panel").panelmenu('add', item.get("name"), item.id);
+	});
+
+	$("select.date").drum({
+		onChange : function (elem) {
+			var section = elem.name.substr(0, elem.name.indexOf("_"));
+			var arr = {'date' : 'setDate', 'month' : 'setMonth', 'fullYear' : 'setFullYear', 'hours' : 'setHours', 'minutes' : 'setMinutes'};
+			
+			var datetime = new Date();
+			for (var s in arr) {
+				var i = ($("form[name='date_" + section + "'] select[name='" + section + "_" + s + "']"))[0].value;
+				eval ("datetime." + arr[s] + "(" + i + ")");
+			}
+			datetime.setSeconds(0);
+
+			DateRange.setStatus(section, datetime);
+		}
+	});
+
+	DateRange.reload();
+
+	var Hammertime = new Hammer(document.getElementById('lower_menu_handle'), {
+		prevent_default: true,
+		no_mouseevents: true
+	});
+	
+	Hammertime.on("tap", function (e) {
+		$(e.target).blur();
+
+		if ($(e.target).hasClass("now")) {
+
+			var datetime = new Date();
+			AppConfig.set({
+				from: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() - 6, datetime.getMinutes(), 0, 0), 
+				to: datetime
+			});
+			AppConfig.save();
+			DateRange.reload();
+
+		} else if ($(e.target).hasClass("set")) {
+
+			DateRange.set();
+
+		} else if ($(e.target).hasClass("today")) {
+
+			var now = new Date();
+			AppConfig.set({
+				from: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0),
+				to : new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 0, 0)
+			});
+			AppConfig.save();
+			DateRange.reload();
+
+		} else if ($(e.target).hasClass("left")) {
+
+			var datetime = AppConfig.getFrom();
+			AppConfig.set({
+				from: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() - 6, datetime.getMinutes(), 0, 0), 
+				to: datetime
+			});
+			AppConfig.save();
+			DateRange.reload();
+
+		} else if ($(e.target).hasClass("right")) {
+
+			var datetime = AppConfig.getTo();
+			AppConfig.set({
+				from: datetime,
+				to: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() + 6, datetime.getMinutes(), 0, 0)
+			});
+			AppConfig.save();
+			DateRange.reload();
+
+		} else {
+	
+			$(".date_range").toggleClass("lower_menu_close");
+			$(".date_range .handle").toggleClass("show_up");
+			$(".date_range .handle").toggleClass("show_down");
+			$(".date_range .handle .btn_grp").toggle();
+
+		}
 	});
 });

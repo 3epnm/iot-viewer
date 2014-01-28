@@ -48,7 +48,7 @@ rm script.compile.js
 
 cat header.css > styles.css
 
-for OUTPUT in $(/usr/bin/perl -lne '/<link rel=\"stylesheet\" href=\"(.*)\"/ and print "$1"' ../index.html)
+for OUTPUT in $(/usr/bin/perl -lne '/<link rel=\"stylesheet\" href=\"(.*)\"/ and print "$1"' compile.html)
 do
 	cat "../${OUTPUT}" >> styles.css
 done
