@@ -22917,7 +22917,7 @@ var PlotView = (function () {
 	};
 	function construct () {
 		$(document).ready(function () {
-			init();
+			window.setTimeout(init, 250);
 		});
 		return {
 			init : init,
