@@ -18,6 +18,7 @@
 	<link rel="icon" type="image/png" href="favicon-96x96.png" sizes="96x96">
 	<link rel="icon" type="image/png" href="favicon-32x32.png" sizes="32x32">
 	<link rel="icon" type="image/png" href="favicon-16x16.png" sizes="16x16">
+
 	<link rel="stylesheet" href="lib/styles.min.css" ></link>
 	<script rel="notcompile" src="lib/script.min.js"></script>
 </head>
@@ -75,7 +76,10 @@
 		</div>
 	</div>
 
-	<div class="menu lower date_range lower_menu_close">
+	<div class="plotfrom"></div>
+	<div class="plotto"></div>	
+
+	<div class="menu lower date_range lower_menu_close">	
 		<div class="date_range_container outside menu_container">
 			<div id="lower_menu_handle" class="handle show_up">
 				<div class="heading">Date Time Range</div>
@@ -496,6 +500,49 @@
 			<% } %>
 			</span>
 			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" name="<%= listItem.id %>_name" value="<%= listItem.name %>" class="form-control">
+
+			<div class="input-group-btn color">
+				<button id="<%= listItem.id %>_color" type="button" class="btn btn-default dropdown-toggle <%= listItem.color %>" data-toggle="dropdown">Color <span class="caret"></span></button>
+				<ul name="<%= listItem.id %>_color" class="listitem_color dropdown-menu pull-right">
+                    <li><a href="#" class="aqua"></a></li>
+                    <li><a href="#" class="black"></a></li>
+                    <li><a href="#" class="blue"></a></li>
+                    <li><a href="#" class="brown"></a></li>
+                    <li><a href="#" class="cyan"></a></li>
+                    <li><a href="#" class="darkblue"></a></li>
+                    <li><a href="#" class="darkcyan"></a></li>
+                    <li><a href="#" class="darkgrey"></a></li>
+                    <li><a href="#" class="darkgreen"></a></li>
+                    <li><a href="#" class="darkkhaki"></a></li>
+                    <li><a href="#" class="darkmagenta"></a></li>
+                    <li><a href="#" class="darkolivegreen"></a></li>
+                    <li><a href="#" class="darkorange"></a></li>
+                    <li><a href="#" class="darkorchid"></a></li>
+                    <li><a href="#" class="darkred"></a></li>
+                    <li><a href="#" class="darksalmon"></a></li>
+                    <li><a href="#" class="darkviolet"></a></li>
+                    <li><a href="#" class="fuchsia"></a></li>
+                    <li><a href="#" class="gold"></a></li>
+                    <li><a href="#" class="green"></a></li>
+                    <li><a href="#" class="indigo"></a></li>
+                    <li><a href="#" class="khaki"></a></li>
+                    <li><a href="#" class="lightblue"></a></li>
+                    <li><a href="#" class="lightgreen"></a></li>
+                    <li><a href="#" class="lightpink"></a></li>
+                    <li><a href="#" class="lime"></a></li>
+                    <li><a href="#" class="magenta"></a></li>
+                    <li><a href="#" class="maroon"></a></li>
+                    <li><a href="#" class="navy"></a></li>
+                    <li><a href="#" class="olive"></a></li>
+                    <li><a href="#" class="orange"></a></li>
+                    <li><a href="#" class="pink"></a></li>
+                    <li><a href="#" class="purple"></a></li>
+                    <li><a href="#" class="violet"></a></li>
+                    <li><a href="#" class="red"></a></li>
+                    <li><a href="#" class="silver"></a></li>
+				</ul>
+			</div>		
+
 			<span class="input-group-addon device-addon_current-value"><%= listItem.current_value %><%= listItem.symbol %></span>
 		</div>
 	</div>
@@ -524,8 +571,31 @@
 			<input name="show_lines" type="checkbox">
 		<% } %>
 	</div>
+	<div class="form-group form-group-switch">
+		<p>Cursor</p>
+		<% if ( cursor ) { %>
+			<input name="cursor" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="cursor" type="checkbox">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch" style="clear: both;">
+		<p>Pan</p>
+		<% if ( pan ) { %>
+			<input name="panzoom" value="pan" type="radio" checked="checked">
+		<% } else { %>
+			<input name="panzoom" value="pan" type="radio">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch">
+		<p>Zoom</p>
+		<% if ( zoom ) { %>
+			<input name="panzoom" value="zoom" type="radio" checked="checked">
+		<% } else { %>
+			<input name="panzoom" value="zoom" type="radio">
+		<% } %>
+	</div>
 	<div class="form-buttons">
-		<button class="save btn btn-default">save</button>
 		<button class="cancel btn btn-default">close</button>
 	</div>
 </script>
