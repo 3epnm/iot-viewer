@@ -54,7 +54,6 @@ do
 done
 
 minify styles.css styles.compile.css
-cat header.css > styles.min.css
 cat styles.compile.css >> styles.min.css
 
 rm styles.compile.css
