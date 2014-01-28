@@ -17,8 +17,6 @@ div.mainmenu div.mainmenu_container {
 	-moz-box-shadow:    0px 1px 5px 1px rgba(150, 150, 150, 0.33);
 	box-shadow:         0px 1px 5px 1px rgba(150, 150, 150, 0.33);
 
-	transition: height 0.3s ease-in-out;
-	-moz-transition: height 0.3s ease-in-out;
 	-webkit-transition: height 0.3s ease-in-out;
 }
 
@@ -105,4 +103,29 @@ div.upper_menu_close {
 	transform: translateY(-40px);
 	-ms-transform: translateY(-40px);
 	-webkit-transform: translateY(-40px);
+}
+
+.plotfrom, 
+.plotto {
+	font-size: smaller;
+	color: #545454;
+	background-color: rgb(255, 255, 255);
+	line-height: 22px;
+	width: 110px;
+	height: 22px;
+	position: absolute;
+	bottom: 5px;
+	text-align: center;
+	display: none;
+}
+
+.plotfrom {
+	left: 5px;
+} 
+.plotto {
+	right: 5px;
+}
+div.lower_menu_close .plotfrom, 
+div.lower_menu_close .plotto {
+	bottom: 185px;
 }

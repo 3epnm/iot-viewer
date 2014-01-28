@@ -141,3 +141,83 @@ button.edit, button.devices {
 	-webkit-border-bottom-right-radius: 4px;
 	border-bottom-right-radius: 4px;
 }
+
+.color button {
+	border-left: none !important;
+	border-radius: 0px !important;
+}
+
+.color ul {
+	padding: 0px;
+	min-width: 240px;
+	min-height: 111px;
+}
+
+.color li {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;  
+	border: solid 1px lightgray;
+	width: 22px; 
+	height: 22px;
+	float: left;
+	padding: 0px;
+	margin: 4px 0px 0px 4px;
+}
+
+.color li a {
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;  
+	text-align: center;
+	width: 100%;
+	border: solid white 2px;
+	width: 20px; 
+	height: 20px;
+	padding: 0px;
+	margin: 0px;
+}
+
+.color .aqua { background-color: aqua !important; color: black !important; }
+.color .azure { background-color: azure !important; color: black!important; }
+.color .beige { background-color: beige !important; color: black !important; }
+.color .black { background-color: black !important; color: white !important; }
+.color .blue { background-color: blue !important; color: white !important; }
+.color .brown { background-color: brown !important; color: white !important; }
+.color .cyan { background-color: cyan !important; color: black !important; }
+.color .darkblue { background-color: darkblue !important; color: white !important; }
+.color .darkcyan { background-color: darkcyan !important; color: white !important; }
+.color .darkgrey { background-color: darkgrey !important; color: white !important; }
+.color .darkgreen { background-color: darkgreen !important; color: white !important; }
+.color .darkkhaki { background-color: darkkhaki !important; color: black !important; }
+.color .darkmagenta { background-color: darkmagenta !important; color: white !important; }
+.color .darkolivegreen { background-color: darkolivegreen !important; color: white !important; }
+.color .darkorange { background-color: darkorange !important; color: black !important; }
+.color .darkorchid { background-color: darkorchid !important; color: white !important; }
+.color .darkred { background-color: darkred !important; color: white !important; }
+.color .darksalmon { background-color: darksalmon !important; color: black !important; }
+.color .darkviolet { background-color: darkviolet !important; color: white !important; }
+.color .fuchsia { background-color: fuchsia !important; color: black !important; }
+.color .gold { background-color: gold !important; color: black !important; }
+.color .green { background-color: green !important; color: white !important; }
+.color .indigo { background-color: indigo !important; color: white !important; }
+.color .khaki { background-color: khaki !important; color: black !important; }
+.color .lightblue { background-color: lightblue !important; color: black !important; }
+.color .lightcyan { background-color: lightcyan !important; color: black !important; }
+.color .lightgreen { background-color: lightgreen !important; color: black !important; }
+.color .lightgrey { background-color: lightgrey !important; color: black !important; }
+.color .lightpink { background-color: lightpink !important; color: black !important; }
+.color .lightyellow { background-color: lightyellow !important; color: black !important; }
+.color .lime { background-color: lime !important; color: black !important; }
+.color .magenta { background-color: magenta !important; color: black !important; }
+.color .maroon { background-color: maroon !important; color: white !important; }
+.color .navy { background-color: navy !important; color: white !important; }
+.color .olive { background-color: olive !important; color: white !important; }
+.color .orange { background-color: orange !important; color: black !important; }
+.color .pink { background-color: pink !important; color: black !important; }
+.color .purple { background-color: purple !important; color: white !important; }
+.color .violet { background-color: violet !important; color: black !important; }
+.color .red { background-color: red !important; color: black !important; }
+.color .silver { background-color: silver !important; color: black !important; }
+.color .white { background-color: white !important; color: black !important; }
+.color .yellow { background-color: yellow !important; color: black !important; }
