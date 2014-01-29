@@ -81,10 +81,10 @@ The plugin allso adds the following methods to the plot object:
 (function ($) {
     function init(plot) {
         var selection = {
-                first: { x: -1, y: -1}, second: { x: -1, y: -1},
-                show: false,
-                active: false
-            };
+            first: { x: -1, y: -1}, second: { x: -1, y: -1},
+            show: false,
+            active: false
+        };
 
         // FIXME: The drag handling implemented here should be
         // abstracted out, there's some similar code from a library in
@@ -168,14 +168,13 @@ The plugin allso adds the following methods to the plot object:
                     r[name] = { from: Math.min(p1, p2), to: Math.max(p1, p2) };
                 }
             });
-            return r;
+            return jQuery.isEmptyObject(r) ? null : r;
         }
 
         function triggerSelectedEvent() {
             var r = getSelection();
             if (!r)
                 return;
-
             plot.getPlaceholder().trigger("plotselected", [ r ]);
 
             // backwards-compat stuff, to be removed in future
@@ -285,8 +284,9 @@ The plugin allso adds the following methods to the plot object:
 
             selection.show = true;
             plot.triggerRedrawOverlay();
-            if (!preventEvent && selectionIsSane())
+            if (!preventEvent && selectionIsSane()) {
                 triggerSelectedEvent();
+            }
         }
 
         function selectionIsSane() {
@@ -307,6 +307,16 @@ The plugin allso adds the following methods to the plot object:
                     prevent_default: true,
                     no_mouseevents: true
                 });
+
+                Hammertime.on("touchend", function (e) {
+                    if (selectionIsSane() && getSelection()) {
+                        triggerSelectedEvent();
+                    }
+
+                    selection.active = false;
+                    selection.show = false;
+                });
+                
                 Hammertime.on("touchmove", function (e) {
                     if (e.touches.length == 2) {
                         setSelectionPos(selection.first, e.touches[0]);
@@ -322,10 +332,6 @@ The plugin allso adds the following methods to the plot object:
 
                         plot.getPlaceholder().trigger("plotselecting", [ getSelection() ]);
                     }
-                });
-                Hammertime.on("touchend", function (e) {
-                    triggerSelectedEvent();
-                    clearSelection(true);
                 });
 
                 eventHolder.mousemove(onMouseMove);

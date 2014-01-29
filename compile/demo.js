@@ -16716,7 +16716,6 @@ window.AppData = Backbone.Model.extend({
 			load_to: null,
 			show_points : false,
 			show_lines : true,
-			show_tutorial : true,
 			pan : false,
 			zoom : true,
 			cursor: true
@@ -17731,7 +17730,6 @@ var AppConfigView = Backbone.View.extend({
 		var data = {
 			show_points : $( "input[name='show_points']", this.$el ).prop('checked'),
 			show_lines : $( "input[name='show_lines']", this.$el ).prop('checked'),
-			show_tutorial : $( "input[name='show_tutorial']", this.$el ).prop('checked'),
 			cursor : $( "input[name='cursor']", this.$el ).prop('checked'),
 			pan : $( "input[value='pan']", this.$el ).prop('checked'),
 			zoom : $( "input[value='zoom']", this.$el ).prop('checked')
@@ -17851,6 +17849,7 @@ var DevicesView = Backbone.View.extend({
 	},
 	set_color: function (e) {
 		var name = $(e.currentTarget).parent().parent().attr("name");
+		$("#" + name).dropdown('toggle');
 		var id = name.substr(0, name.length - 6);
 		var device = Devices.get(id);
 		device.save({'color' : e.currentTarget.className});
@@ -21403,6 +21402,7 @@ The plugin also adds four public methods:
 			});
 			Hammertime.on("touchend", function (e) {
 				onMouseOut(e);
+				eventHolder.trigger( "plothoverend", [ ] );
 			})
 		});
 
@@ -21544,10 +21544,10 @@ The plugin allso adds the following methods to the plot object:
 (function ($) {
     function init(plot) {
         var selection = {
-                first: { x: -1, y: -1}, second: { x: -1, y: -1},
-                show: false,
-                active: false
-            };
+            first: { x: -1, y: -1}, second: { x: -1, y: -1},
+            show: false,
+            active: false
+        };
 
         // FIXME: The drag handling implemented here should be
         // abstracted out, there's some similar code from a library in
@@ -21631,14 +21631,13 @@ The plugin allso adds the following methods to the plot object:
                     r[name] = { from: Math.min(p1, p2), to: Math.max(p1, p2) };
                 }
             });
-            return r;
+            return jQuery.isEmptyObject(r) ? null : r;
         }
 
         function triggerSelectedEvent() {
             var r = getSelection();
             if (!r)
                 return;
-
             plot.getPlaceholder().trigger("plotselected", [ r ]);
 
             // backwards-compat stuff, to be removed in future
@@ -21748,8 +21747,9 @@ The plugin allso adds the following methods to the plot object:
 
             selection.show = true;
             plot.triggerRedrawOverlay();
-            if (!preventEvent && selectionIsSane())
+            if (!preventEvent && selectionIsSane()) {
                 triggerSelectedEvent();
+            }
         }
 
         function selectionIsSane() {
@@ -21770,6 +21770,16 @@ The plugin allso adds the following methods to the plot object:
                     prevent_default: true,
                     no_mouseevents: true
                 });
+
+                Hammertime.on("touchend", function (e) {
+                    if (selectionIsSane() && getSelection()) {
+                        triggerSelectedEvent();
+                    }
+
+                    selection.active = false;
+                    selection.show = false;
+                });
+                
                 Hammertime.on("touchmove", function (e) {
                     if (e.touches.length == 2) {
                         setSelectionPos(selection.first, e.touches[0]);
@@ -21785,10 +21795,6 @@ The plugin allso adds the following methods to the plot object:
 
                         plot.getPlaceholder().trigger("plotselecting", [ getSelection() ]);
                     }
-                });
-                Hammertime.on("touchend", function (e) {
-                    triggerSelectedEvent();
-                    clearSelection(true);
                 });
 
                 eventHolder.mousemove(onMouseMove);
@@ -22666,6 +22672,9 @@ var PlotView = (function () {
 	
 	var plotdata = {};
 	var events = {};
+	var lastPos = null;
+
+	var is_updating = false;
 	
 	var updateRangeLegend = function () {
 		var axes = instance_plot.getAxes();
@@ -22692,13 +22701,15 @@ var PlotView = (function () {
 		$(selector + ' .legendX').remove();
 	};
 
-	var updateLegendY = function (pos) {
+	var updateLegendY = function () {
 		var i, j, dataset = instance_plot.getData();
-		
+
 		updateLegendTimeout = null;
 
 		if (dataset.length < 1)
 			return;
+
+		var pos = lastPos;
 
 		updateLegendX(new Date(pos.x));
 
@@ -22760,6 +22771,8 @@ var PlotView = (function () {
 	};
 
 	var showMask = function () {
+		is_updating = true;
+
 		removeLegendY();
 		if ($(selector).is(":visible") && $(selector + " canvas").length > 0) {
 			$(selector).append('<div class="mask" style="right: ' + $('.legend div', $(selector)).first().css('right') + '">loading...</div>');
@@ -22769,6 +22782,8 @@ var PlotView = (function () {
 	};
 
 	var hideMask = function () {
+		is_updating = false;
+
 		AppView.hideMask();
 	};
 
@@ -22824,22 +22839,27 @@ var PlotView = (function () {
 			delete instance_plot;
 		}
 	};
+
 	var init = function (force) {
 		destroy();
 
 		var data = get_plotdata();
 		instance_plot = $.plot(selector, data, getOptions());
 		updateRangeLegend();
-
+		
 		if (AppConfig.get("zoom")) {
 			events.zoom = $(selector).bind("plotselected", function (event, ranges) {
 				removeLegendY();
-				AppConfig.set({
+
+				var set = {
 					from: new Date(parseInt(ranges.xaxis.from.toFixed(1))),
 					to: new Date(parseInt(ranges.xaxis.to.toFixed(1)))
+				};
+				AppConfig.save(set, {
+					success : function () {
+						DateRange.reload();
+					}
 				});
-				AppConfig.save();
-				DateRange.reload();
 			});	
 		}
 
@@ -22847,9 +22867,9 @@ var PlotView = (function () {
 			events.pan =  $(selector).bind("plotpan", function (event, plot) {
 				if (updateLegendTimeout)
 					window.clearTimeout(updateLegendTimeout);
+				
 				updateLegendTimeout = true;
 				removeLegendY();
-				
 				updateRangeLegend();
 				
 				if (updateTimeout)
@@ -22874,9 +22894,18 @@ var PlotView = (function () {
 		}
 
 		if (AppConfig.get("cursor")) {
-			events.cursor = $(selector).bind("plothover",  function (event, pos, item) {
+			events.cursorbegin = $(selector).bind("plothover",  function (event, pos, item) {
+				if (!pos.x || !pos.y)
+					return;
+				lastPos = pos;
 				if (!updateLegendTimeout)
-					updateLegendTimeout = window.setTimeout(function () { updateLegendY(pos); }, 10);
+					updateLegendTimeout = window.setTimeout(function () { updateLegendY(); }, 50);
+			});
+			events.cursorend = $(selector).bind("plothoverend",  function (event) {
+				if (updateLegendTimeout)
+					window.clearTimeout(updateLegendTimeout);
+				updateLegendTimeout = false;
+				removeLegendY();
 			});
 		}
 	};
@@ -23660,7 +23689,9 @@ var fixViewportHeight = function() {
 $(document).ready(function () {
 	window.addEventListener("scroll", fixViewportHeight, false);
 	window.addEventListener("orientationchange", fixViewportHeight, false);
-	fixViewportHeight();
+	window.setTimeout(function () {
+		fixViewportHeight();
+	}, 100);
 });
 
 $(document).on("focus", "input[type='text']", false, function (e) {
@@ -23767,16 +23798,10 @@ $(document).ready(function () {
 	$("select.date").drum({
 		onChange : function (elem) {
 			var section = elem.name.substr(0, elem.name.indexOf("_"));
-			var arr = {'date' : 'setDate', 'month' : 'setMonth', 'fullYear' : 'setFullYear', 'hours' : 'setHours', 'minutes' : 'setMinutes'};
-			
-			var datetime = new Date();
-			for (var s in arr) {
-				var i = ($("form[name='date_" + section + "'] select[name='" + section + "_" + s + "']"))[0].value;
-				eval ("datetime." + arr[s] + "(" + i + ")");
-			}
-			datetime.setSeconds(0);
-
-			DateRange.setStatus(section, datetime);
+			var obj = {'date' : null, 'month' : null, 'fullYear' : null, 'hours' : null, 'minutes' : null};
+			for (var s in obj)
+				obj[s] = ($("form[name='date_" + section + "'] select[name='" + section + "_" + s + "']"))[0].value;
+			DateRange.setStatus(section, new Date(obj.fullYear, obj.month, obj.date, obj.hours, obj.minutes, 0));
 		}
 	});
 
@@ -23787,18 +23812,24 @@ $(document).ready(function () {
 		no_mouseevents: true
 	});
 	
+	var toggle_lowermenu_state = function () {
+		$(".date_range").toggleClass("lower_menu_close");
+		$(".date_range .handle").toggleClass("show_up");
+		$(".date_range .handle").toggleClass("show_down");
+		$(".date_range .handle .btn_grp").toggle();
+	};
+
 	Hammertime.on("tap", function (e) {
 		$(e.target).blur();
 
+		var set = null;
 		if ($(e.target).hasClass("now")) {
 
 			var datetime = new Date();
-			AppConfig.set({
+			set = {
 				from: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() - 6, datetime.getMinutes(), 0, 0), 
 				to: datetime
-			});
-			AppConfig.save();
-			DateRange.reload();
+			};
 
 		} else if ($(e.target).hasClass("set")) {
 
@@ -23807,41 +23838,37 @@ $(document).ready(function () {
 		} else if ($(e.target).hasClass("today")) {
 
 			var now = new Date();
-			AppConfig.set({
+			set = {
 				from: new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0),
 				to : new Date(now.getFullYear(), now.getMonth(), now.getDate()+1, 0, 0, 0, 0)
-			});
-			AppConfig.save();
-			DateRange.reload();
+			};
 
 		} else if ($(e.target).hasClass("left")) {
 
 			var datetime = AppConfig.getFrom();
-			AppConfig.set({
+			set = {
 				from: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() - 6, datetime.getMinutes(), 0, 0), 
 				to: datetime
-			});
-			AppConfig.save();
-			DateRange.reload();
+			};
 
 		} else if ($(e.target).hasClass("right")) {
 
 			var datetime = AppConfig.getTo();
-			AppConfig.set({
+			set = {
 				from: datetime,
 				to: new Date(datetime.getFullYear(), datetime.getMonth(), datetime.getDate(), datetime.getHours() + 6, datetime.getMinutes(), 0, 0)
-			});
-			AppConfig.save();
-			DateRange.reload();
-
-		} else {
-	
-			$(".date_range").toggleClass("lower_menu_close");
-			$(".date_range .handle").toggleClass("show_up");
-			$(".date_range .handle").toggleClass("show_down");
-			$(".date_range .handle .btn_grp").toggle();
-
+			};
 		}
+
+		if (set) {
+			AppConfig.save(set, {
+				success : function () {
+					DateRange.reload();
+				}
+			});			
+		};
+
+		toggle_lowermenu_state();
 	});
 });
 

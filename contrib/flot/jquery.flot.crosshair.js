@@ -139,6 +139,7 @@ The plugin also adds four public methods:
 			});
 			Hammertime.on("touchend", function (e) {
 				onMouseOut(e);
+				eventHolder.trigger( "plothoverend", [ ] );
 			})
 		});
 
