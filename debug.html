@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset='utf-8'>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta id="viewport" name="viewport" content ="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<title>Internet of Things Viewer</title>
+
+	<link rel="apple-touch-icon" sizes="57x57" href="styles/icons/apple-touch-icon-57x57.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="styles/icons/apple-touch-icon-114x114.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="styles/icons/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="144x144" href="styles/icons/apple-touch-icon-144x144.png">
+	<link rel="apple-touch-icon" sizes="60x60" href="styles/icons/apple-touch-icon-60x60.png">
+	<link rel="apple-touch-icon" sizes="120x120" href="styles/icons/apple-touch-icon-120x120.png">
+	<link rel="apple-touch-icon" sizes="76x76" href="styles/icons/apple-touch-icon-76x76.png">
+	<link rel="apple-touch-icon" sizes="152x152" href="styles/icons/apple-touch-icon-152x152.png">
+
+	<link rel="stylesheet" href="contrib/bootstrap/css/bootstrap.css">
+	<link rel="stylesheet" href="contrib/bootstrap-switch/bootstrap-switch.css">
+	<link rel="stylesheet" href="styles/form.css"></link>
+	<link rel="stylesheet" href="styles/flot.css"></link>
+	<link rel="stylesheet" href="contrib/drumjs/drum.css"></link>
+	<link rel="stylesheet" href="styles/daterange.css"></link>
+	<link rel="stylesheet" href="styles/menu.css"></link>
+	<link rel="stylesheet" href="contrib/panelmenu/panelmenu.css"></link>
+	<link rel="stylesheet" href="styles/styles.css"></link>
+
+	<script src="lib/appcache.js"></script>
+	<script src="lib/date.js"></script>
+	<script src="lib/array.js"></script>
+	<script src="lib/string.js"></script>
+
+	<script src="contrib/jquery/jquery-1.9.1.js"></script>
+	<script src="contrib/jsonp/jsonp.js"></script>
+	<script src="contrib/hammerjs/hammer.js"></script>
+	<script src="contrib/hammerjs/hammer.fakemultitouch.js"></script>
+	<script src="contrib/bootstrap/js/bootstrap.js"></script>
+	<script src="contrib/bootstrap-switch/bootstrap-switch.js"></script>
+
+	<script src="contrib/underscore/underscore.js"></script>
+	<script src="contrib/backbone/backbone.js"></script>
+	<script src="contrib/backbone/backbone.localStorage.js"></script>
+	<script src="lib/backbone-overrides.js"></script>
+
+	<script src="lib/om/AppData.js"></script>
+	<script src="lib/om/AppDataList.js"></script>
+	<script src="lib/om/ProviderDriver.js"></script>
+	<script src="lib/om/ProviderDriverJsonP.js"></script>
+	<script src="lib/om/ProviderOpenSense.js"></script>
+	<script src="lib/om/ProviderThingSpeak.js"></script>
+	<script src="lib/om/ProviderXively.js"></script>
+	<script src="lib/om/ProviderDriverList.js"></script>
+	<script src="lib/om/DeviceData.js"></script>
+	<script src="lib/om/Device.js"></script>
+	<script src="lib/om/DeviceList.js"></script>
+	<script src="lib/om/Provider.js"></script>
+	<script src="lib/om/ProviderList.js"></script>
+
+	<script src="lib/views/PromptView.js"></script>
+	<script src="lib/views/ConfirmView.js"></script>
+	<script src="lib/views/ErrorView.js"></script>
+	<script src="lib/views/AppView.js"></script>
+	<script src="lib/views/AppConfigView.js"></script>
+	<script src="lib/views/ProviderOpenSenseInitializeView.js"></script>
+	<script src="lib/views/ProviderThingSpeakInitializeView.js"></script>
+	<script src="lib/views/ProviderXivelyInitializeView.js"></script>
+	<script src="lib/views/DevicesView.js"></script>
+	<script src="lib/views/ProviderDriverView.js"></script>
+	<script src="lib/views/ProviderView.js"></script>
+
+	<script src="contrib/flot/jquery.flot.js"></script>
+	<script src="contrib/flot/jquery.flot.resize.js"></script>
+	<script src="contrib/flot/jquery.flot.crosshair.js"></script>
+	<script src="contrib/flot/jquery.flot.selection.js"></script>
+	<script src="contrib/flot/jquery.flot.navigate.js"></script>
+	<script src="contrib/flot/jquery.flot.time.js"></script>
+
+	<script src="lib/views/PlotView.js"></script>
+	<script src="contrib/drumjs/drum.js"></script>
+	<script src="lib/views/MenuView.js"></script>
+	<script src="contrib/panelmenu/panelmenu.js"></script>
+	<script src="lib/main.js"></script>
+
+	<link rel="stylesheet" href="styles/tutorial.css"></link>
+	<script src="lib/views/TutorialView.js"></script>
+</head>
+<body>
+<div class="wrapper">
+	<div id="flot"></div>
+	<div class="menu upper mainmenu upper_menu_close">
+		<div class="mainmenu_container menu_container">
+			<div id="panel" class="panelmenu">
+				<div class="ctrl">
+					<button class="icon move left"></button>
+				</div>
+				<div class="outer">
+					<div class="items">
+						<div class="inner">
+							<button id="add_provider" class="icon add"></button>
+						</div>
+					</div>
+				</div>
+				<div class="ctrl">
+					<button class="icon move right"></button>
+					<button class="icon settings"></button>
+				</div>
+			</div>
+			<div id="form" class="form"></div>
+			<div id="upper_menu_handle" class="handle show_down">
+				<div class="heading">Sensor Feeds</div>
+				<svg class="up" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path
+						fill="none"
+						stroke="#555555"
+						stroke-width="1px"
+						stroke-linecap="butt"
+						stroke-linejoin="miter"
+						stroke-opacity="1"
+						d="m0,11l22,-9l22,9">
+					</path>
+				</g>
+				</svg>
+				<svg class="down" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path
+						fill="none"
+						stroke="#555555"
+						stroke-width="1px"
+						stroke-linecap="butt"
+						stroke-linejoin="miter"
+						stroke-opacity="1"
+						d="m0,0l22,9l22,-9">
+					</path>
+				</g>
+				</svg>
+			</div>
+		</div>
+	</div>
+
+	<div class="plotfrom"></div>
+	<div class="plotto"></div>
+
+	<div class="menu lower date_range lower_menu_close">
+		<div class="date_range_container outside menu_container">
+			<div id="lower_menu_handle" class="handle show_up">
+				<div class="heading">Date Time Range</div>
+				<svg class="up" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path
+						fill="none"
+						stroke="#555555"
+						stroke-width="1px"
+						stroke-linecap="butt"
+						stroke-linejoin="miter"
+						stroke-opacity="1"
+						d="m0,11l22,-9l22,9">
+					</path>
+				</g>
+				</svg>
+				<svg class="down" width="44" height="11" xmlns="http://www.w3.org/2000/svg">
+				<g>
+					<path
+						fill="none"
+						stroke="#555555"
+						stroke-width="1px"
+						stroke-linecap="butt"
+						stroke-linejoin="miter"
+						stroke-opacity="1"
+						d="m0,0l22,9l22,-9">
+					</path>
+				</g>
+				</svg>
+				<div class="btn_grp">
+					<button class="left"></button>
+					<button class="right"></button>
+					<button class="today">Day</button>
+					<button class="now">Now</button>
+					<button class="set">Set</button>
+				</div>
+			</div>
+			<div class="date_range_from">
+				<div class="date_range_header date_range_from_header">
+					<span class="title">Begin</span>
+					<span class="selection"></span>
+				</div>
+				<form name="date_from">
+					<div class="lines"><div>:</div></div>
+					<select class="form-control input-sm date" id="from_date" name="from_date">
+						<option value="1">1.</option>
+						<option value="2">2.</option>
+						<option value="3">3.</option>
+						<option value="4">4.</option>
+						<option value="5">5.</option>
+						<option value="6">6.</option>
+						<option value="7">7.</option>
+						<option value="8">8.</option>
+						<option value="9">9.</option>
+						<option value="10">10.</option>
+						<option value="11">11.</option>
+						<option value="12">12.</option>
+						<option value="13">13.</option>
+						<option value="14">14.</option>
+						<option value="15">15.</option>
+						<option value="16">16.</option>
+						<option value="17">17.</option>
+						<option value="18">18.</option>
+						<option value="19">19.</option>
+						<option value="20">20.</option>
+						<option value="21">21.</option>
+						<option value="22">22.</option>
+						<option value="23">23.</option>
+						<option value="24">24.</option>
+						<option value="25">25.</option>
+						<option value="26">26.</option>
+						<option value="27">27.</option>
+						<option value="28">28.</option>
+						<option value="29">29.</option>
+						<option value="30">30.</option>
+						<option value="31">31.</option>
+					</select>
+					<select class="form-control input-sm date" id="from_month" name="from_month">
+						<option value="0">January</option>
+						<option value="1">February</option>
+						<option value="2">March</option>
+						<option value="3">April</option>
+						<option value="4">May</option>
+						<option value="5">June</option>
+						<option value="6">July</option>
+						<option value="7">August</option>
+						<option value="8">September</option>
+						<option value="9">October</option>
+						<option value="10">November</option>
+						<option value="11">December</option>
+					</select>
+					<select class="form-control input-sm date" id="from_fullYear" name="from_fullYear">
+						<option value="2011">2011</option>
+						<option value="2012">2012</option>
+						<option value="2013">2013</option>
+						<option value="2014">2014</option>
+						<option value="2015">2015</option>
+						<option value="2016">2016</option>
+						<option value="2017">2017</option>
+					</select>
+					<select class="form-control input-sm date" id="from_hours" name="from_hours">
+						<option value="0">00</option>
+						<option value="1">01</option>
+						<option value="2">02</option>
+						<option value="3">03</option>
+						<option value="4">04</option>
+						<option value="5">05</option>
+						<option value="6">06</option>
+						<option value="7">07</option>
+						<option value="8">08</option>
+						<option value="9">09</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+					</select>
+					<select class="form-control input-sm date" id="from_minutes" name="from_minutes">
+						<option value="0">00</option>
+						<option value="1">01</option>
+						<option value="2">02</option>
+						<option value="3">03</option>
+						<option value="4">04</option>
+						<option value="5">05</option>
+						<option value="6">06</option>
+						<option value="7">07</option>
+						<option value="8">08</option>
+						<option value="9">09</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+						<option value="31">31</option>
+						<option value="32">32</option>
+						<option value="33">33</option>
+						<option value="34">34</option>
+						<option value="35">35</option>
+						<option value="36">36</option>
+						<option value="37">37</option>
+						<option value="38">38</option>
+						<option value="39">39</option>
+						<option value="40">40</option>
+						<option value="41">41</option>
+						<option value="42">42</option>
+						<option value="43">43</option>
+						<option value="44">44</option>
+						<option value="45">45</option>
+						<option value="46">46</option>
+						<option value="47">47</option>
+						<option value="48">48</option>
+						<option value="49">49</option>
+						<option value="50">50</option>
+						<option value="51">51</option>
+						<option value="52">52</option>
+						<option value="53">53</option>
+						<option value="54">54</option>
+						<option value="55">55</option>
+						<option value="56">56</option>
+						<option value="57">57</option>
+						<option value="58">48</option>
+						<option value="59">59</option>
+					</select>
+				</form>
+			</div>
+			<div class="date_range_to">
+				<div class="date_range_header date_range_to_header">
+					<span class="title">End</span>
+					<span class="selection"></span>
+				</div>
+				<form name="date_to">
+					<div class="lines"><div>:</div></div>
+					<select class="form-control input-sm date" id="to_date" name="to_date">
+						<option value="1">1.</option>
+						<option value="2">2.</option>
+						<option value="3">3.</option>
+						<option value="4">4.</option>
+						<option value="5">5.</option>
+						<option value="6">6.</option>
+						<option value="7">7.</option>
+						<option value="8">8.</option>
+						<option value="9">9.</option>
+						<option value="10">10.</option>
+						<option value="11">11.</option>
+						<option value="12">12.</option>
+						<option value="13">13.</option>
+						<option value="14">14.</option>
+						<option value="15">15.</option>
+						<option value="16">16.</option>
+						<option value="17">17.</option>
+						<option value="18">18.</option>
+						<option value="19">19.</option>
+						<option value="20">20.</option>
+						<option value="21">21.</option>
+						<option value="22">22.</option>
+						<option value="23">23.</option>
+						<option value="24">24.</option>
+						<option value="25">25.</option>
+						<option value="26">26.</option>
+						<option value="27">27.</option>
+						<option value="28">28.</option>
+						<option value="29">29.</option>
+						<option value="30">30.</option>
+						<option value="31">31.</option>
+					</select>
+					<select class="form-control input-sm date" id="to_month" name="to_month">
+						<option value="0">January</option>
+						<option value="1">February</option>
+						<option value="2">March</option>
+						<option value="3">April</option>
+						<option value="4">May</option>
+						<option value="5">June</option>
+						<option value="6">July</option>
+						<option value="7">August</option>
+						<option value="8">September</option>
+						<option value="9">October</option>
+						<option value="10">November</option>
+						<option value="11">December</option>
+					</select>
+					<select class="form-control input-sm date" id="to_fullYear" name="to_fullYear">
+						<option value="2011">2011</option>
+						<option value="2012">2012</option>
+						<option value="2013">2013</option>
+						<option value="2014">2014</option>
+						<option value="2015">2015</option>
+						<option value="2016">2016</option>
+						<option value="2017">2017</option>
+					</select>
+					<select class="form-control input-sm date" id="to_hours" name="to_hours">
+						<option value="0">00</option>
+						<option value="1">01</option>
+						<option value="2">02</option>
+						<option value="3">03</option>
+						<option value="4">04</option>
+						<option value="5">05</option>
+						<option value="6">06</option>
+						<option value="7">07</option>
+						<option value="8">08</option>
+						<option value="9">09</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+					</select>
+					<select class="form-control input-sm date" id="to_minutes" name="to_minutes">
+						<option value="0">00</option>
+						<option value="1">01</option>
+						<option value="2">02</option>
+						<option value="3">03</option>
+						<option value="4">04</option>
+						<option value="5">05</option>
+						<option value="6">06</option>
+						<option value="7">07</option>
+						<option value="8">08</option>
+						<option value="9">09</option>
+						<option value="10">10</option>
+						<option value="11">11</option>
+						<option value="12">12</option>
+						<option value="13">13</option>
+						<option value="14">14</option>
+						<option value="15">15</option>
+						<option value="16">16</option>
+						<option value="17">17</option>
+						<option value="18">18</option>
+						<option value="19">19</option>
+						<option value="20">20</option>
+						<option value="21">21</option>
+						<option value="22">22</option>
+						<option value="23">23</option>
+						<option value="24">24</option>
+						<option value="25">25</option>
+						<option value="26">26</option>
+						<option value="27">27</option>
+						<option value="28">28</option>
+						<option value="29">29</option>
+						<option value="30">30</option>
+						<option value="31">31</option>
+						<option value="32">32</option>
+						<option value="33">33</option>
+						<option value="34">34</option>
+						<option value="35">35</option>
+						<option value="36">36</option>
+						<option value="37">37</option>
+						<option value="38">38</option>
+						<option value="39">39</option>
+						<option value="40">40</option>
+						<option value="41">41</option>
+						<option value="42">42</option>
+						<option value="43">43</option>
+						<option value="44">44</option>
+						<option value="45">45</option>
+						<option value="46">46</option>
+						<option value="47">47</option>
+						<option value="48">48</option>
+						<option value="49">49</option>
+						<option value="50">50</option>
+						<option value="51">51</option>
+						<option value="52">52</option>
+						<option value="53">53</option>
+						<option value="54">54</option>
+						<option value="55">55</option>
+						<option value="56">56</option>
+						<option value="57">57</option>
+						<option value="58">48</option>
+						<option value="59">59</option>
+					</select>
+				</form>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="tutorial" class="tutorial">
+<table>
+<tr>
+	<td><div class="tutorial_template"></div></td>
+</tr>
+</table>
+</div>
+<div id="mask" class="mask">
+	<div class="wait"></div>
+</div>
+<div id="error" class="form">
+	<div class="error"></div>
+</div>
+<div id="confirm" class="form">
+	<div class="confirm"></div>
+</div>
+<div id="prompt" class="form">
+	<div class="prompt"></div>
+</div>
+
+<script type="text/template" id="tutorial_template">
+	<h3>Introduction</h3>
+	<div class="inner">
+		<div class="content">
+			<p>If you open the <b>IOT Viewer</b> for the first time, you can start with the tutorial or load the demo.</p>
+			<p>For more information, read the <a target="_new" href="http://mb.aquarius.uberspace.de/internet-of-things-viewer/">Blogpost</a> or visit the project at <a href="https://github.com/3epnm/iot-viewer" target="_new">GitHub</a>.</p>
+		</div>
+		<div class="bottom">
+			<div class="buttons">
+				<div class="pull-left">
+					<button class="start btn btn-default btn-sm">Start Introduction</button>
+					<button class="demo btn btn-default btn-sm">Load Demo</button>
+				</div>
+				<div class="pull-right">
+					<button class="cancel btn btn-primary btn-sm">close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_1">
+	<h3>Introduction - register a new provider</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step t0">
+				<p>In order to register a new provider, the Sensor Feeds Panel opened and clicked on the
+				plus icon. In the following dialog the name of the new provider is specified.</p>
+			</div>
+			<div class="step t15">
+				<p>In the next view, the type of the provider is set by clicking on the corresponding
+				button. The dialog is expanded and the providers credentials could specified.</p>
+				<p>Currently, Xively, ThingSpeak and Open.Sen.Se are supported by IOT Viewer.</p>
+				<p>In the next view, the type of the provider is set by clicking on the corresponding
+				button. The dialog is expanded and the providers credentials could specified.</p>
+				<p>The credentials form may differ depending on the provider.</p>
+			</div>
+			<div class="step t28">
+				<p>If the registration was successful, in the next view a list of available devices will
+				be shown.</p>
+				<p>You can change the Name of the Devices (which are by default set to the id given by the
+				provider)</p>
+				<p>You can reload the list at any time to refresh the list of available devices or to
+				update the value. By Clicking on the provider button, you can change to the last view.</p>
+			</div>
+			<div class="step last t46">
+				<p>If the the box in front of the textfield is checked, the device is added to the
+				plot.</p>
+				<div class="continue">
+					<button class="next btn btn-default btn-sm">next</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" width="612" height="466" controls>
+			<source src="video/introduction_1.m4v" type="video/mp4">
+			<source src="video/introduction_1.ogv" type="video/ogg">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
+			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_2">
+	<h3>Introduction - change the datetime range of the plot</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step t0">
+				<p>When moving the mouse pointer (or with a touch gesture) on the plot, the current values
+				are displayed ​​in the legend above the right and the associated datetime at the bottom
+				right.</p>
+				<p>It can be zoomed into an area by left-click, drag and release with a mouse on the plot.
+				On a touch device, this is done with a two finger gesture.</p>
+			</div>
+			<div class="step t6">
+				<p>Below the plot is the daterange selector. A from and to date and time values can be
+				changed by swipe up and down on the rollers.</p>
+				<p>On a non touch device, this could be done by click on above and underneath the currently
+				selected value of a roller.</p>
+			</div>
+			<div class="step t6">
+				<p>Below the plot is the daterange selector. A from and to date and time values can be
+				changed by swipe up and down on the rollers.</p>
+				<p>On a non touch device, this could be done by click on above and underneath the currently
+				selected value of a roller.</p>
+				<p>The selected date time range is set with the set button top right of the panel.</p>
+			</div>
+			<div class="step last t32">
+				<p>Loading the data from the providers server might take a while.</p>
+				<div class="continue">
+					<button class="prev btn btn-default btn-sm">prev</button>
+					<button class="next btn btn-default btn-sm">next</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" width="612" height="466" controls>
+			<source src="video/introduction_2.m4v" type="video/mp4">
+			<source src="video/introduction_2.ogv" type="video/ogg">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
+			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_3">
+	<h3>Introduction - shortcuts for changing the time range</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step t0">
+				<p>A click or a tap on the <i>Day</i> button, top right of the daterange selector panel,
+				changes the datetime range to the current day.</p>
+			</div>
+			<div class="step t6">
+				<p>With clicking or tapping on the arrow buttons, the datetime range is paged in six hour
+				sections into the past or future.</p>
+			</div>
+			<div class="step last t16">
+				<p>Clicking on the <i>Now</i> button changes the datetime range the the present to six hours
+				in the past.</p>
+				<div class="continue">
+					<button class="prev btn btn-default btn-sm">prev</button>
+					<button class="next btn btn-default btn-sm">next</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" width="612" height="466" controls>
+			<source src="video/introduction_3.m4v" type="video/mp4">
+			<source src="video/introduction_3.ogv" type="video/ogg">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
+			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="tutorial_template_introduction_4">
+	<h3>Introduction - change plot options</h3>
+	<div class="inner">
+		<div class="content">
+			<div class="step last t0">
+				<p>The gear button on the top right of the sensor feeds panel opens the application
+				settings form.</p>
+				<p>In this form, the lines and dots on the plot and are switched on or off.</p>
+				<p>	You can load my ThingSpeak read api credentials for a testrun by clicking <i>Load Demo</i>.</p>
+				<div class="continue">
+					<button class="prev btn btn-default btn-sm">prev</button>
+					<button class="demo btn btn-default btn-sm">Load Demo</button>
+				</div>
+			</div>
+		</div>
+		<video id="video" controls>
+			<source src="video/introduction_4.m4v" type="video/mp4">
+			<source src="video/introduction_4.ogv" type="video/ogg">
+			Your browser does not support the video tag.
+		</video>
+		<div class="bottom">
+			<div class="checkbox">
+				<label>
+					<input class="set" name="hide_tutorial" type="checkbox">
+					<span>Hide introduction at startup</span>
+				</label>
+			</div>
+			<button class="cancel btn btn-primary btn-sm">close</button>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="drivers_view">
+	<h5>Provider Type</h5>
+	<div class="form-group">
+		<div class="drivers btn-group">
+		<% _.each( drivers, function( driver ) { %>
+			<button data-name="<%= driver.name %>" class="set btn btn-default"<% if (driver.disabled) { %>disabled="disabled"<% } %>><%= driver.name %></button>
+		<% }); %>
+		</div>
+	</div>
+</script>
+
+<script type="text/template" id="thingspeak_initialize">
+	<h5>ThingSpeak Inititalisation</h5>
+	<div class="form-group">
+		<label for="channelid" class="control-label">Channel ID</label>
+		<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= channelid %>"  name="channelid" class="channelid form-control input-sm">
+	</div>
+	<div class="form-group">
+		<label for="apikey" class="control-label">API Key</label>
+		<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="password" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
+	</div>
+</script>
+
+<script type="text/template" id="xively_initialize">
+	<h5>Xively Inititalisation</h5>
+	<div class="form-group">
+		<label for="feedid" class="control-label">Feed ID</label>
+		<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= feedid %>"  name="feedid" class="feedid form-control input-sm">
+	</div>
+	<div class="form-group">
+		<label for="apikey" class="control-label">API Key</label>
+		<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="password" value="<%= apikey %>"  name="apikey" class="apikey form-control input-sm">
+	</div>
+</script>
+
+<script type="text/template" id="opensense_initialize">
+	<h5>OpenSenSe Inititalisation</h5>
+	<div class="form-group">
+		<label for="feedid" class="control-label">Feed IDs (comma seperated)</label>
+		<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= feedids %>"  name="feedids" class="feedids form-control input-sm">
+	</div>
+	<div class="form-group">
+		<label for="sense_key" class="control-label">API Key</label>
+		<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="password" value="<%= sense_key %>"  name="sense_key" class="sense_key form-control input-sm">
+	</div>
+</script>
+
+<script type="text/template" id="devices_view">
+	<h5><%= title %></h5>
+	<% _.each( listItems, function( listItem ){ %>
+	<div class="form-group">
+		<div class="input-group input-group-sm">
+			<span class="input-group-addon">
+			<% if ( listItem.active) { %>
+				<input name="<%= listItem.id %>_activated" type="checkbox" checked="checked">
+			<% } else { %>
+				<input name="<%= listItem.id %>_activated" type="checkbox">
+			<% } %>
+			</span>
+			<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" name="<%= listItem.id %>_name" value="<%= listItem.name %>" class="form-control">
+
+			<div class="input-group-btn color">
+				<button id="<%= listItem.id %>_color" type="button" class="btn btn-default dropdown-toggle <%= listItem.color %>" data-toggle="dropdown">Color <span class="caret"></span></button>
+				<ul name="<%= listItem.id %>_color" class="listitem_color dropdown-menu pull-right">
+                    <li><a href="#" class="aqua"></a></li>
+                    <li><a href="#" class="black"></a></li>
+                    <li><a href="#" class="blue"></a></li>
+                    <li><a href="#" class="brown"></a></li>
+                    <li><a href="#" class="cyan"></a></li>
+                    <li><a href="#" class="darkblue"></a></li>
+                    <li><a href="#" class="darkcyan"></a></li>
+                    <li><a href="#" class="darkgrey"></a></li>
+                    <li><a href="#" class="darkgreen"></a></li>
+                    <li><a href="#" class="darkkhaki"></a></li>
+                    <li><a href="#" class="darkmagenta"></a></li>
+                    <li><a href="#" class="darkolivegreen"></a></li>
+                    <li><a href="#" class="darkorange"></a></li>
+                    <li><a href="#" class="darkorchid"></a></li>
+                    <li><a href="#" class="darkred"></a></li>
+                    <li><a href="#" class="darksalmon"></a></li>
+                    <li><a href="#" class="darkviolet"></a></li>
+                    <li><a href="#" class="fuchsia"></a></li>
+                    <li><a href="#" class="gold"></a></li>
+                    <li><a href="#" class="green"></a></li>
+                    <li><a href="#" class="indigo"></a></li>
+                    <li><a href="#" class="khaki"></a></li>
+                    <li><a href="#" class="lightblue"></a></li>
+                    <li><a href="#" class="lightgreen"></a></li>
+                    <li><a href="#" class="lightpink"></a></li>
+                    <li><a href="#" class="lime"></a></li>
+                    <li><a href="#" class="magenta"></a></li>
+                    <li><a href="#" class="maroon"></a></li>
+                    <li><a href="#" class="navy"></a></li>
+                    <li><a href="#" class="olive"></a></li>
+                    <li><a href="#" class="orange"></a></li>
+                    <li><a href="#" class="pink"></a></li>
+                    <li><a href="#" class="purple"></a></li>
+                    <li><a href="#" class="violet"></a></li>
+                    <li><a href="#" class="red"></a></li>
+                    <li><a href="#" class="silver"></a></li>
+				</ul>
+			</div>
+
+			<span class="input-group-addon device-addon_current-value"><%= listItem.current_value %><%= listItem.symbol %></span>
+		</div>
+	</div>
+	<% }); %>
+	<button class="set btn btn-default">save</button>
+	<button class="reload btn btn-default">reload</button>
+	<button class="cancel btn btn-default">close</button>
+	<button class="edit btn btn-default">provider</button>
+</script>
+
+<script type="text/template" id="appconfig_template">
+	<h5>Application Settings</h5>
+	<div class="form-group form-group-switch">
+		<p>Show points</p>
+		<% if ( show_points ) { %>
+			<input name="show_points" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_points" type="checkbox">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch">
+		<p>Show lines</p>
+		<% if ( show_lines ) { %>
+			<input name="show_lines" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="show_lines" type="checkbox">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch">
+		<p>Cursor</p>
+		<% if ( cursor ) { %>
+			<input name="cursor" type="checkbox" checked="checked">
+		<% } else { %>
+			<input name="cursor" type="checkbox">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch">
+		<p>Pan</p>
+		<% if ( pan ) { %>
+			<input name="panzoom" value="pan" type="radio" checked="checked">
+		<% } else { %>
+			<input name="panzoom" value="pan" type="radio">
+		<% } %>
+	</div>
+	<div class="form-group form-group-switch" style="clear: both;">
+		<p>Zoom</p>
+		<% if ( zoom ) { %>
+			<input name="panzoom" value="zoom" type="radio" checked="checked">
+		<% } else { %>
+			<input name="panzoom" value="zoom" type="radio">
+		<% } %>
+	</div>
+	<div class="form-buttons">
+		<button class="cancel btn btn-default">close</button>
+	</div>
+</script>
+
+<script type="text/template" id="provider_template">
+	<h5>Provider Settings</h5>
+	<div class="form-group">
+		<label for="name" class="control-label">Name</label>
+		<input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= name %>"  name="name" class="name form-control input-sm">
+	</div>
+	<button class="save btn btn-default">save</button>
+	<button class="delete btn btn-default">delete</button>
+	<button class="cancel btn btn-default">close</button>
+	<% if ( show_devices_button ) { %>
+	<button class="devices btn btn-default">devices</button>
+	<% } %>
+</script>
+
+<script type="text/template" id="error_template">
+	<table class="center">
+	<tr>
+		<td><h4><%= headline %></h4></td>
+	</tr>
+	<tr>
+		<td><%= message %></td>
+	</tr>
+	<tr>
+		<td>
+			<div class="btn-group"><button class="ok btn btn-default">ok</button></div>
+		</td>
+	</tr>
+	</table>
+</script>
+
+<script type="text/template" id="confirm_template">
+	<table class="center">
+	<tr>
+		<td><%= msg %></td>
+	</tr>
+	<tr>
+		<td>
+			<div class="btn-group">
+				<button class="yes btn btn-default">yes</button>
+				<button class="no btn btn-default">no</button>
+			</div>
+		</td>
+	</tr>
+	</table>
+</script>
+
+<script type="text/template" id="prompt_template">
+	<h5><%= text %></h5>
+	<div class="form-group">
+		<input id="prompt_value" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" type="text" value="<%= value %>"  class="value form-control input-sm">
+	</div>
+	<button class="cancel btn btn-default">cancel</button>
+	<button class="ok btn btn-default">ok</button>
+</script>
+</body>
+</html>
